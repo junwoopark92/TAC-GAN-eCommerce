@@ -22,7 +22,7 @@ def parse_data(path):
         raw_categories = list(map(lambda x: ' '.join(x.replace('\n', ' ').replace('\t', ' ').replace(',', ' ').split())
                                   if len(x.replace(' ', '')) > 0 else '-1', raw_categories))
         categories = ",".join(raw_categories)
-        title = product['title'].replace('\n', ' ').replace('\t', ' ').replace(',', ' ')
+        title = product['title'].replace('\n', ' ').replace('\t', ' ').replace(',', ' ').replace('&amp;', '')
 
         data_list.append((asin, categories, title))
 
