@@ -3,7 +3,6 @@ from PIL import Image
 from io import BytesIO
 from tqdm import tqdm
 import gzip
-import json
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 

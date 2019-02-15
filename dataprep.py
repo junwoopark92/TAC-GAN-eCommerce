@@ -167,7 +167,7 @@ def save_caption_vectors_products(data_dir):
 
     encoded_captions = {}
     for i, img in enumerate(image_captions):
-        encoded_captions[img] = encoded_caption_array[i, :]
+        encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
         # if i > 100:
         #     break
 

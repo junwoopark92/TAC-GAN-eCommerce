@@ -15,7 +15,7 @@ class ImTextDataset(Dataset):
     train      : determines which part of the dataset to use. By default:train
     image_size : intented image size. By default: 128x128
     '''
-    def __init__(self, data_dir, dataset='flowers', train=True, image_size=128):
+    def __init__(self, data_dir, dataset='flowers', train=True, image_size=128, cap_size_per_img=1):
         super(ImTextDataset, self).__init__()
         
         self.train = train  # determines whether to return train or validation images
@@ -28,7 +28,8 @@ class ImTextDataset(Dataset):
         self.captions_encoded = {}  # array with the encoded captions per id. array shape is (5, 4800)
         self.classes = {}  # one-hot vector encoding the class
         self.trans_img = transforms.Compose([transforms.Scale(image_size), transforms.CenterCrop(image_size),
-                                             transforms.ToTensor(),]) # transformation for output image 
+                                             transforms.ToTensor(),]) # transformation for output image
+        self.cap_size_per_img = cap_size_per_img
         self._load_pickle_files()
 
     def __getitem__(self, index):
@@ -41,7 +42,7 @@ class ImTextDataset(Dataset):
         image =Image.open(image_path)
         image = self.trans_img(image)
         # pick a random encoded caption
-        rnd = random.randint(0,5)
+        rnd = random.randint(0, self.cap_size_per_img)
         rnd_encoded_caption = self.captions_encoded[id][rnd]
         return image, self.classes[id], rnd_encoded_caption, self.captions[id][rnd]
 
