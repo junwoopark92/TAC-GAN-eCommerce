@@ -23,6 +23,8 @@ def parse_data(path):
                                   if len(x.replace(' ', '')) > 0 else '-1', raw_categories))
         categories = ",".join(raw_categories)
         title = product['title'].replace('\n', ' ').replace('\t', ' ').replace(',', ' ').replace('&amp;', '')
+        if len(title) == 0:
+            continue
 
         data_list.append((asin, categories, title))
 

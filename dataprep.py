@@ -144,12 +144,12 @@ def save_caption_vectors_products(data_dir):
     with open(caption_path) as cap_f:
         for i, line in enumerate(cap_f):
             row = line.strip().split('\t')
-            try:
-                asin = row[0]
-                categories = row[1]
-                title = row[2]
-            except:
-                print(row)
+            # try:
+            asin = row[0]
+            categories = row[1]
+            title = row[2]
+            # except:
+            #     print(row)
 
             imgid = asin+'.jpg'
             image_captions[imgid] = [title]
