@@ -154,7 +154,7 @@ def save_caption_vectors_products(data_dir):
             imgid = asin+'.jpg'
             image_captions[imgid] = [title]
             image_classes[imgid] = np.sum(np.asarray([one_hot_encode_str_lbl(class_name, target, one_hot_targets)
-                                           for class_name in categories.split(',')]), axis=0)
+                                           for class_name in categories.split(',')]), axis=0).astype(bool).astype(int)
 
             if i % 100000 == 0:
                 print(i, image_captions[imgid])
