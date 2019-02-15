@@ -176,26 +176,26 @@ def save_caption_vectors_products(data_dir):
             # if i > 100:
             #     break
 
-        ec_pkl_path = (os.path.join(data_dir, 'products', 'products_tv_{}.pkl'.format(i)))
+        ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(i)))
         pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
 
-    img_ids = list(image_captions.keys())
-
-    random.shuffle(img_ids)
-    n_train_instances = int(len(img_ids) * 0.9)
-    tr_image_ids = img_ids[0:n_train_instances]
-    val_image_ids = img_ids[n_train_instances: -1]
-
-    pickle.dump(image_captions,
-                open(os.path.join(data_dir, 'products', 'products_caps.pkl'), "wb"))
-
-    pickle.dump(tr_image_ids,
-                open(os.path.join(data_dir, 'products', 'train_ids.pkl'), "wb"))
-    pickle.dump(val_image_ids,
-                open(os.path.join(data_dir, 'products', 'val_ids.pkl'), "wb"))
-
-    fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
-    pickle.dump(image_classes, open(fc_pkl_path, "wb"))
+    # img_ids = list(image_captions.keys())
+    #
+    # random.shuffle(img_ids)
+    # n_train_instances = int(len(img_ids) * 0.9)
+    # tr_image_ids = img_ids[0:n_train_instances]
+    # val_image_ids = img_ids[n_train_instances: -1]
+    #
+    # pickle.dump(image_captions,
+    #             open(os.path.join(data_dir, 'products', 'products_caps.pkl'), "wb"))
+    #
+    # pickle.dump(tr_image_ids,
+    #             open(os.path.join(data_dir, 'products', 'train_ids.pkl'), "wb"))
+    # pickle.dump(val_image_ids,
+    #             open(os.path.join(data_dir, 'products', 'val_ids.pkl'), "wb"))
+    #
+    # fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
+    # pickle.dump(image_classes, open(fc_pkl_path, "wb"))
 
 
 def main(datadir, dataset):
