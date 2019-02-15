@@ -18,7 +18,7 @@ def parse_data(path):
             continue
 
         asin = product['asin']
-        raw_categories = sum(product['categories'], [])
+        raw_categories = sum(list(map(lambda x:[x[0]] if len(x) > 0 else ['-1'], product['categories'])), [])
         raw_categories = list(map(lambda x: ' '.join(x.replace('\n', ' ').replace('\t', ' ').replace(',', ' ').split())
                                   if len(x.replace(' ', '')) > 0 else '-1', raw_categories))
         categories = ",".join(raw_categories)

@@ -159,17 +159,25 @@ def save_caption_vectors_products(data_dir):
             # if i > 100:
             #     break
 
+    chunk_size = 500000
+    n_chunk = len(image_captions) // 500000 + 1
     model = skipthoughts.load_model()
-    titles = [j for sub in image_captions.values() for j in sub]
-    st = time.time()
-    encoded_caption_array = skipthoughts.encode(model, titles)
-    print("Seconds", time.time() - st)
+    for i in range(n_chunk):
+        start_index = i*chunk_size
+        end_index = start_index + chunk_size
+        titles = [j for sub in image_captions.values()[start_index:end_index] for j in sub]
+        st = time.time()
+        encoded_caption_array = skipthoughts.encode(model, titles)
+        print("Seconds", time.time() - st)
 
-    encoded_captions = {}
-    for i, img in enumerate(image_captions):
-        encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
-        # if i > 100:
-        #     break
+        encoded_captions = {}
+        for i, img in enumerate(image_captions.keys()[start_index:end_index]):
+            encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
+            # if i > 100:
+            #     break
+
+        ec_pkl_path = (os.path.join(data_dir, 'products', 'products_tv_{}.pkl'.format(i)))
+        pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
 
     img_ids = list(image_captions.keys())
 
@@ -185,9 +193,6 @@ def save_caption_vectors_products(data_dir):
                 open(os.path.join(data_dir, 'products', 'train_ids.pkl'), "wb"))
     pickle.dump(val_image_ids,
                 open(os.path.join(data_dir, 'products', 'val_ids.pkl'), "wb"))
-
-    ec_pkl_path = (os.path.join(data_dir, 'products', 'products_tv.pkl'))
-    pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
 
     fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
     pickle.dump(image_classes, open(fc_pkl_path, "wb"))
