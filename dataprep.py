@@ -246,8 +246,8 @@ class eCommerceData:
 
             ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
             joblib.dump(encoded_captions, ec_pkl_path)
-            # del encoded_captions
-            # del encoded_caption_array
+            del encoded_captions
+            del encoded_caption_array
 
 
         # pool = Pool(self.num_workers)
