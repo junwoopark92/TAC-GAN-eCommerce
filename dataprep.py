@@ -246,7 +246,10 @@ class eCommerceData:
                 #     break
 
             ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-            open(ec_pkl_path, 'wb').write(cPickle.dumps(encoded_captions, 2))
+            with open(ec_pkl_path, 'wb') as out_f:
+                out_f.write(cPickle.dumps(encoded_captions, 2))
+                cPickle.Pickler.clear_memo()
+
 
             del encoded_captions
             del encoded_caption_array
