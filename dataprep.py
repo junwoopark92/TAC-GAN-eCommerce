@@ -153,6 +153,7 @@ class eCommerceData:
             p.clear_memo()
             f_out.close()
 
+            del model
             del skipthoughts
             del encoded_captions
             del encoded_caption_array
