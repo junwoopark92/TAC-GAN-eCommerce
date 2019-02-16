@@ -1,10 +1,20 @@
 import gzip
+import os
+import tqdm
 
+def write_titles(titles, titles_path):
+    titles_dir = os.path.dirname(titles_path)
+    os.makedirs(titles_dir, exist_ok=True)
+
+    f_titles = open(titles_path, 'w')
+
+    for title in tqdm.tqdm(titles, mininterval=1):
+        f_titles.write(title + '\n')
 
 def parse_data(path):
     data_list = []
     category_list = []
-
+    titles = ['text']
     g = gzip.open(path, 'r')
     for i, l in enumerate(g):
         product = eval(l)
@@ -27,6 +37,7 @@ def parse_data(path):
         if len(title) == 0:
             continue
 
+        titles.append(title)
         data_list.append((asin, categories, title))
 
         for category in raw_categories:
@@ -36,8 +47,7 @@ def parse_data(path):
         if i % 10000 == 0:
             print(i, product['asin'], product['title'], product['categories'])
 
-        # if i > 20000:
-        #     break
+    write_titles(titles, 'data/datasets/products.csv')
 
     with open('./data/datasets/products/products.tsv', 'w') as data_file:
         for data in data_list:
