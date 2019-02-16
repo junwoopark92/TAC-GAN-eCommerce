@@ -1,15 +1,16 @@
 import os
 import fire
 import time
-import glob
-import argparse
+import sys
 import skipthoughts
 import traceback
 import pickle
 import random
-
+import h5py
 import numpy as np
-
+from misc import get_logger, ges_Aonfig
+from multiprocessing import Pool
+from functools import partial
 
 def one_hot_encode_str_lbl(lbl, target, one_hot_targets):
     """
@@ -133,84 +134,206 @@ def save_caption_vectors_flowers(data_dir, dt_range=(1, 103)):
     pickle.dump(image_classes, open(fc_pkl_path, "wb"))
 
 
-def save_caption_vectors_products(data_dir):
-    caption_path = os.path.join(data_dir, 'products/products.tsv')
-    target_file_path = os.path.join(data_dir, "products/categories.txt")
-    image_captions = {}
-    image_classes = {}
-
-    target, one_hot_targets, n_target = get_one_hot_targets(target_file_path)
-
-    with open(caption_path) as cap_f:
-        for i, line in enumerate(cap_f):
-            row = line.strip().split('\t')
-            # try:
-            asin = row[0]
-            categories = row[1]
-            title = row[2]
-            # except:
-            #     print(row)
-
-            imgid = asin+'.jpg'
-            image_captions[imgid] = [title]
-            image_classes[imgid] = np.sum(np.asarray([one_hot_encode_str_lbl(class_name, target, one_hot_targets)
-                                           for class_name in categories.split(',')]), axis=0).astype(bool).astype(int)
-
-            if i % 100000 == 0:
-                print(i, image_captions[imgid])
-                print(np.sum(image_classes[imgid]), categories)
-
-            # if i > 100:
-            #     break
-
-    chunk_size = 500000
-    n_chunk = len(image_captions) // 500000 + 1
-    model = skipthoughts.load_model()
-    for i in range(n_chunk):
-        start_index = i*chunk_size
-        end_index = start_index + chunk_size
-        titles = [j for sub in image_captions.values()[start_index:end_index] for j in sub]
+def preprocessing(chunk, data_dir):
+    index = chunk[0]
+    key_caps = chunk[1]
+    try:
+        model = skipthoughts.load_model()
+        titles = [cap[0] for key, cap in key_caps]
+        keys = [key for key, cap in key_caps]
         st = time.time()
         encoded_caption_array = skipthoughts.encode(model, titles)
         print("Seconds", time.time() - st)
 
         encoded_captions = {}
-        for i, img in enumerate(image_captions.keys()[start_index:end_index]):
+        for i, img in enumerate(keys):
             encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
             # if i > 100:
             #     break
 
-        ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(i)))
+        ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
         pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
-
-    # img_ids = list(image_captions.keys())
-    #
-    # random.shuffle(img_ids)
-    # n_train_instances = int(len(img_ids) * 0.9)
-    # tr_image_ids = img_ids[0:n_train_instances]
-    # val_image_ids = img_ids[n_train_instances: -1]
-    #
-    # pickle.dump(image_captions,
-    #             open(os.path.join(data_dir, 'products', 'products_caps.pkl'), "wb"))
-    #
-    # pickle.dump(tr_image_ids,
-    #             open(os.path.join(data_dir, 'products', 'train_ids.pkl'), "wb"))
-    # pickle.dump(val_image_ids,
-    #             open(os.path.join(data_dir, 'products', 'val_ids.pkl'), "wb"))
-    #
-    # fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
-    # pickle.dump(image_classes, open(fc_pkl_path, "wb"))
+    except Exception:
+        raise Exception("".join(traceback.format_exception(*sys.exc_info())))
 
 
-def main(datadir, dataset):
+class eCommerceData:
+    def __init__(self, config):
+        self.out_dir = config['DATAPREP']['OUT_DIR']
+        self.chunk_size = config['DATAPREP']['CHUNK_SIZE']
+        self.num_workers = config['DATAPREP']['NUM_WORKERS']
+        self.skipvec_size = config['DATAPREP']['SKIPVEC_SIZE']
+
+    def get_train_indices(self, size, train_ratio):
+        train_indices = np.random.rand(size) < train_ratio
+        train_size = int(np.count_nonzero(train_indices))
+        return train_indices, train_size
+
+    def create_dataset(self, g, size, num_classes):
+        g.create_dataset('skipvec', (size, self.skipvec_size), chunks=True, dtype=np.float32)
+        g.create_dataset('cate', (size, num_classes), chunks=True, dtype=np.int32)
+        g.create_dataset('asin', (size,), chunks=True, dtype='S14')
+
+    def init_chunk(self, chunk_size, num_classes):
+        chunk = {}
+        chunk['skipvec'] = np.zeros(shape=(chunk_size, self.skipvec_size), dtype=np.float32)
+        chunk['cate'] = np.zeros(shape=(chunk_size, num_classes), dtype=np.int32)
+        chunk['asin'] = []
+        chunk['num'] = 0
+        return chunk
+
+    def copy_chunk(self, dataset, chunk, offset):
+        num = chunk['num']
+        dataset['skipvec'][offset:offset + num] = chunk['skipvec'][:num]
+        dataset['cate'][offset:offset + num] = chunk['cate'][:num]
+        dataset['asin'][offset:offset + num] = chunk['asin'][:num]
+
+    def save_caption_vectors_products(self, data_dir, train_ratio=0.8):
+
+        caption_path = os.path.join(data_dir, 'products/products.tsv')
+        target_file_path = os.path.join(data_dir, "products/categories.txt")
+        image_captions = {}
+        image_classes = {}
+
+        target, one_hot_targets, n_target = get_one_hot_targets(target_file_path)
+
+        with open(caption_path) as cap_f:
+            for i, line in enumerate(cap_f):
+                row = line.strip().split('\t')
+                # try:
+                asin = row[0]
+                categories = row[1]
+                title = row[2]
+                # except:
+                #     print(row)
+
+                imgid = asin+'.jpg'
+                image_captions[imgid] = [title]
+                image_classes[imgid] = np.sum(np.asarray([one_hot_encode_str_lbl(class_name, target, one_hot_targets)
+                                               for class_name in categories.split(',')]), axis=0).astype(bool).astype(int)
+
+                if i % 100000 == 0:
+                    print(i, image_captions[imgid])
+                    print(np.sum(image_classes[imgid]), categories)
+
+                # if i > 20000:
+                #     break
+
+
+        chunk_size = self.chunk_size
+        datasize = len(image_captions)
+        print(datasize)
+        n_chunk = datasize // chunk_size + 1
+        image_captions_list = list(image_captions.items())
+        chunk_list = []
+        for index in range(n_chunk):
+            start_index = index * chunk_size
+            end_index = start_index + chunk_size
+            chunk = image_captions_list[start_index:end_index]
+            chunk_list.append((index, chunk))
+
+        pool = Pool(self.num_workers)
+        try:
+            pool.map_async(partial(preprocessing, data_dir=data_dir), chunk_list).get(999999999)
+            pool.close()
+            pool.join()
+        except KeyboardInterrupt:
+            pool.terminate()
+            pool.join()
+            raise
+
+
+
+        pickle.dump(image_captions,
+                    open(os.path.join(data_dir, 'products', 'products_caps.pkl'), "wb"))
+
+        fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
+        pickle.dump(image_classes, open(fc_pkl_path, "wb"))
+
+        if not os.path.isdir(self.out_dir):
+            os.makedirs(self.out_dir)
+
+        all_train = train_ratio >= 1.0
+        all_dev = train_ratio == 0.0
+
+        train_indices, train_size = self.get_train_indices(datasize, train_ratio)
+
+        dev_size = datasize - train_size
+        if all_dev:
+            train_size = 1
+            dev_size = datasize
+        if all_train:
+            dev_size = 1
+            train_size = datasize
+
+        data_fout = h5py.File(os.path.join(self.out_dir, 'data.h5py'), 'w')
+        train = data_fout.create_group('train')
+        dev = data_fout.create_group('dev')
+        self.create_dataset(train, train_size, n_target)
+        self.create_dataset(dev, dev_size, n_target)
+
+        sample_idx = 0
+        dataset = {'train': train, 'dev': dev}
+        num_samples = {'train': 0, 'dev': 0}
+        chunk = {'train': self.init_chunk(chunk_size, n_target),
+                 'dev': self.init_chunk(chunk_size, n_target)}
+
+        # make h5file
+        for input_chunk_idx in range(n_chunk):
+            path = os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(input_chunk_idx))
+            print('processing %s ...' % path)
+            data = pickle.loads(open(path, 'rb').read())
+            for data_idx, (img_idx, enc_cap) in enumerate(data.items()):
+                cate = image_classes[img_idx]
+
+                is_train = train_indices[sample_idx + data_idx]
+                if all_dev:
+                    is_train = False
+                if all_train:
+                    is_train = True
+
+                c = chunk['train'] if is_train else chunk['dev']
+                idx = c['num']
+                c['skipvec'][idx] = enc_cap
+                c['cate'][idx] = cate
+                c['asin'].append(np.string_(img_idx))
+                c['num'] += 1
+
+                for t in ['train', 'dev']:
+                    if chunk[t]['num'] >= chunk_size:
+                        self.copy_chunk(dataset[t], chunk[t], num_samples[t])
+                        num_samples[t] += chunk[t]['num']
+                        chunk[t] = self.init_chunk(chunk_size, n_target)
+
+            sample_idx += len(data)
+
+        for t in ['train', 'dev']:
+            if chunk[t]['num'] > 0:
+                self.copy_chunk(dataset[t], chunk[t], num_samples[t])
+                num_samples[t] += chunk[t]['num']
+
+        for div in ['train', 'dev']:
+            ds = dataset[div]
+            size = num_samples[div]
+            ds['cate'].resize((size, n_target))
+            ds['skipvec'].resize((size, self.skipvec_size))
+
+        data_fout.close()
+
+
+def main(servertype, datadir, dataset):
     dataset_dir = os.path.join(datadir, "datasets")
     if dataset == 'flowers':
         save_caption_vectors_flowers(dataset_dir)
     if dataset == 'products':
-        save_caption_vectors_products(dataset_dir)
+        config_path = './configs/config-{}.yaml'.format(servertype)
+        config = ges_Aonfig(config_path)
+        data = eCommerceData(config)
+        data.save_caption_vectors_products(dataset_dir)
     else:
         print('Preprocessor for this dataset is not available.')
 
 
 if __name__ == '__main__':
-    fire.Fire({"main": main})
+
+    fire.Fire({"make_db": main})

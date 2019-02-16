@@ -1,0 +1,8 @@
+DATAPREP:
+  DATA_PATH: 'data/datasets/products/metadata.json.gz'
+  OUT_DIR: 'data/datasets/products/train'
+  USE_COLS: ['asin', 'imUrl', 'title', 'categories']
+  SKIPVEC_SIZE: 4800
+  CHUNK_SIZE: 500000
+  NUM_WORKERS: 10
+
