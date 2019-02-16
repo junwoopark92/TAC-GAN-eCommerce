@@ -219,7 +219,6 @@ class eCommerceData:
                 # if i > 20000:
                 #     break
 
-
         chunk_size = self.chunk_size
         datasize = len(image_captions)
         print(datasize)
@@ -232,17 +231,34 @@ class eCommerceData:
             chunk = image_captions_list[start_index:end_index]
             chunk_list.append((index, chunk))
 
-        pool = Pool(self.num_workers)
-        try:
-            pool.map_async(partial(preprocessing, data_dir=data_dir), chunk_list).get(999999999)
-            pool.close()
-            pool.join()
-        except KeyboardInterrupt:
-            pool.terminate()
-            pool.join()
-            raise
+        model = skipthoughts.load_model()
+        for chunk in chunk_list:
+            index = chunk[0]
+            key_caps = chunk[1]
+            titles = [cap[0] for key, cap in key_caps]
+            keys = [key for key, cap in key_caps]
+            st = time.time()
+            encoded_caption_array = skipthoughts.encode(model, titles)
+            print("Seconds", time.time() - st)
 
+            encoded_captions = {}
+            for i, img in enumerate(keys):
+                encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
+                # if i > 100:
+                #     break
 
+            ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
+            pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
+
+        # pool = Pool(self.num_workers)
+        # try:
+        #     pool.map_async(partial(preprocessing, data_dir=data_dir), chunk_list).get(999999999)
+        #     pool.close()
+        #     pool.join()
+        # except KeyboardInterrupt:
+        #     pool.terminate()
+        #     pool.join()
+        #     raise
 
         pickle.dump(image_captions,
                     open(os.path.join(data_dir, 'products', 'products_caps.pkl'), "wb"))
