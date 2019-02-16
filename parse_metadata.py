@@ -47,6 +47,9 @@ def parse_data(path):
         if i % 10000 == 0:
             print(i, product['asin'], product['title'], product['categories'])
 
+        if i > 100000:
+            break
+
     write_titles(titles, 'data/datasets/products.csv')
 
     with open('./data/datasets/products/products.tsv', 'w') as data_file:
