@@ -245,10 +245,13 @@ class eCommerceData:
                 # if i > 100:
                 #     break
 
-            ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-            p = cPickle.Pickler(open(ec_pkl_path, 'wb'))
-            p.dump(encoded_captions)
-            p.clear_memo()
+            # ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
+            # f_out = open(ec_pkl_path, 'wb')
+            # p = cPickle.Pickler(f_out)
+            # p.dump(encoded_captions)
+            # p.clear_memo()
+            # f_out.close()
+
 
             del encoded_captions
             del encoded_caption_array
