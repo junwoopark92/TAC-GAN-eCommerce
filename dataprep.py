@@ -2,7 +2,6 @@ import os
 import fire
 import time
 import sys
-import skipthoughts
 import traceback
 from sklearn.externals import joblib
 import random
@@ -54,105 +53,6 @@ def get_one_hot_targets(target_file_path):
     one_hot_targets[np.arange(n_target), lbl_idxs] = 1
 
     return target, one_hot_targets, n_target
-
-
-def save_caption_vectors_flowers(data_dir, dt_range=(1, 103)):
-    import time
-
-    img_dir = os.path.join(data_dir, 'flowers/jpg')
-    all_caps_dir = os.path.join(data_dir, 'flowers/all_captions.txt')
-    target_file_path = os.path.join(data_dir, "flowers/allclasses.txt")
-    caption_dir = os.path.join(data_dir, 'flowers/text_c10')
-    image_files = [f for f in os.listdir(img_dir) if 'images' in f]
-    print(image_files[300 :400])
-    image_captions = {}
-    image_classes = {}
-    class_dirs = []
-    class_names = []
-    img_ids = []
-
-    target, one_hot_targets, n_target = get_one_hot_targets(target_file_path)
-
-    for i in range(dt_range[0], dt_range[1]) :
-        class_dir_name = 'class_%.5d' % (i)
-        class_dir = os.path.join(caption_dir, class_dir_name)
-        class_names.append(class_dir_name)
-        class_dirs.append(class_dir)
-        onlyimgfiles = [f[0 :11] + ".jpg" for f in os.listdir(class_dir)
-                                    if 'txt' in f]
-        for img_file in onlyimgfiles:
-            image_classes[img_file] = None
-
-        for img_file in onlyimgfiles:
-            image_captions[img_file] = []
-
-    for class_dir, class_name in zip(class_dirs, class_names) :
-        caption_files = [f for f in os.listdir(class_dir) if 'txt' in f]
-        for i, cap_file in enumerate(caption_files) :
-            if i%50 == 0:
-                print(str(i) + ' captions extracted from' + str(class_dir))
-            with open(os.path.join(class_dir, cap_file)) as f :
-                str_captions = f.read()
-                captions = str_captions.split('\n')
-            img_file = cap_file[0 :11] + ".jpg"
-
-            # 5 captions per image
-            image_captions[img_file] += [cap for cap in captions if len(cap) > 0][0 :5]
-            image_classes[img_file] = one_hot_encode_str_lbl(class_name,
-                                                             target,
-                                                             one_hot_targets)
-
-    model = skipthoughts.load_model()
-    encoded_captions = {}
-    for i, img in enumerate(image_captions) :
-        st = time.time()
-        encoded_captions[img] = skipthoughts.encode(model, image_captions[img])
-        if i%20 == 0:
-            print(i, len(image_captions), img)
-            print("Seconds", time.time() - st)
-        if i > 100:
-            break
-
-    img_ids = list(image_captions.keys())
-
-    random.shuffle(img_ids)
-    n_train_instances = int(len(img_ids) * 0.9)
-    tr_image_ids = img_ids[0 :n_train_instances]
-    val_image_ids = img_ids[n_train_instances : -1]
-
-    joblib.dump(image_captions, os.path.join(data_dir, 'flowers', 'flowers_caps.pkl'))
-
-    joblib.dump(tr_image_ids, os.path.join(data_dir, 'flowers', 'train_ids.pkl'))
-    joblib.dump(val_image_ids, os.path.join(data_dir, 'flowers', 'val_ids.pkl'))
-
-    ec_pkl_path = (os.path.join(data_dir, 'flowers', 'flowers_tv.pkl'))
-    joblib.dump(encoded_captions, ec_pkl_path)
-
-    fc_pkl_path = (os.path.join(data_dir, 'flowers', 'flowers_tc.pkl'))
-    joblib.dump(image_classes, fc_pkl_path)
-
-
-def preprocessing(chunk, data_dir):
-    index = chunk[0]
-    key_caps = chunk[1]
-    try:
-        model = skipthoughts.load_model()
-        titles = [cap[0] for key, cap in key_caps]
-        keys = [key for key, cap in key_caps]
-        st = time.time()
-        encoded_caption_array = skipthoughts.encode(model, titles)
-        print("Seconds", time.time() - st)
-
-        encoded_captions = {}
-        for i, img in enumerate(keys):
-            encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
-            # if i > 100:
-            #     break
-
-        ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-        joblib.dump(encoded_captions, ec_pkl_path)
-    except Exception:
-        raise Exception("".join(traceback.format_exception(*sys.exc_info())))
 
 
 class eCommerceData:
@@ -229,8 +129,9 @@ class eCommerceData:
             chunk = image_captions_list[start_index:end_index]
             chunk_list.append((index, chunk))
 
-        model = skipthoughts.load_model()
         for chunk in chunk_list:
+            import skipthoughts
+            model = skipthoughts.load_model()
             index = chunk[0]
             key_caps = chunk[1]
             titles = [cap[0] for key, cap in key_caps]
@@ -245,27 +146,16 @@ class eCommerceData:
                 # if i > 100:
                 #     break
 
-            # ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-            # f_out = open(ec_pkl_path, 'wb')
-            # p = cPickle.Pickler(f_out)
-            # p.dump(encoded_captions)
-            # p.clear_memo()
-            # f_out.close()
+            ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
+            f_out = open(ec_pkl_path, 'wb')
+            p = cPickle.Pickler(f_out)
+            p.dump(encoded_captions)
+            p.clear_memo()
+            f_out.close()
 
-
+            del skipthoughts
             del encoded_captions
             del encoded_caption_array
-
-
-        # pool = Pool(self.num_workers)
-        # try:
-        #     pool.map_async(partial(preprocessing, data_dir=data_dir), chunk_list).get(999999999)
-        #     pool.close()
-        #     pool.join()
-        # except KeyboardInterrupt:
-        #     pool.terminate()
-        #     pool.join()
-        #     raise
 
         joblib.dump(image_captions, os.path.join(data_dir, 'products', 'products_caps.pkl'))
 
