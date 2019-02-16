@@ -11,6 +11,7 @@ import numpy as np
 from misc import get_logger, ges_Aonfig
 from multiprocessing import Pool
 from functools import partial
+from six.moves import cPickle
 
 def one_hot_encode_str_lbl(lbl, target, one_hot_targets):
     """
@@ -245,7 +246,8 @@ class eCommerceData:
                 #     break
 
             ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-            joblib.dump(encoded_captions, ec_pkl_path)
+            open(ec_pkl_path, 'wb').write(cPickle.dumps(encoded_captions, 2))
+
             del encoded_captions
             del encoded_caption_array
 
@@ -297,7 +299,7 @@ class eCommerceData:
         for input_chunk_idx in range(n_chunk):
             path = os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(input_chunk_idx))
             print('processing %s ...' % path)
-            data = joblib.load(path)
+            data = cPickle.loads(open(path, 'rb').read())
             for data_idx, (img_idx, enc_cap) in enumerate(data.items()):
                 cate = image_classes[img_idx]
 
