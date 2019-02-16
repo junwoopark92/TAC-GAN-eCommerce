@@ -4,7 +4,7 @@ import time
 import sys
 import skipthoughts
 import traceback
-import pickle
+from sklearn.externals import joblib
 import random
 import h5py
 import numpy as np
@@ -119,19 +119,16 @@ def save_caption_vectors_flowers(data_dir, dt_range=(1, 103)):
     tr_image_ids = img_ids[0 :n_train_instances]
     val_image_ids = img_ids[n_train_instances : -1]
 
-    pickle.dump(image_captions,
-                open(os.path.join(data_dir, 'flowers', 'flowers_caps.pkl'), "wb"))
+    joblib.dump(image_captions, os.path.join(data_dir, 'flowers', 'flowers_caps.pkl'))
 
-    pickle.dump(tr_image_ids,
-                open(os.path.join(data_dir, 'flowers', 'train_ids.pkl'), "wb"))
-    pickle.dump(val_image_ids,
-                open(os.path.join(data_dir, 'flowers', 'val_ids.pkl'), "wb"))
+    joblib.dump(tr_image_ids, os.path.join(data_dir, 'flowers', 'train_ids.pkl'))
+    joblib.dump(val_image_ids, os.path.join(data_dir, 'flowers', 'val_ids.pkl'))
 
     ec_pkl_path = (os.path.join(data_dir, 'flowers', 'flowers_tv.pkl'))
-    pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
+    joblib.dump(encoded_captions, ec_pkl_path)
 
     fc_pkl_path = (os.path.join(data_dir, 'flowers', 'flowers_tc.pkl'))
-    pickle.dump(image_classes, open(fc_pkl_path, "wb"))
+    joblib.dump(image_classes, fc_pkl_path)
 
 
 def preprocessing(chunk, data_dir):
@@ -152,7 +149,7 @@ def preprocessing(chunk, data_dir):
             #     break
 
         ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-        pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
+        joblib.dump(encoded_captions, ec_pkl_path)
     except Exception:
         raise Exception("".join(traceback.format_exception(*sys.exc_info())))
 
@@ -248,7 +245,10 @@ class eCommerceData:
                 #     break
 
             ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-            pickle.dump(encoded_captions, open(ec_pkl_path, "wb"))
+            joblib.dump(encoded_captions, ec_pkl_path)
+            # del encoded_captions
+            # del encoded_caption_array
+
 
         # pool = Pool(self.num_workers)
         # try:
@@ -260,11 +260,10 @@ class eCommerceData:
         #     pool.join()
         #     raise
 
-        pickle.dump(image_captions,
-                    open(os.path.join(data_dir, 'products', 'products_caps.pkl'), "wb"))
+        joblib.dump(image_captions, os.path.join(data_dir, 'products', 'products_caps.pkl'))
 
         fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
-        pickle.dump(image_classes, open(fc_pkl_path, "wb"))
+        joblib.dump(image_classes, fc_pkl_path)
 
         if not os.path.isdir(self.out_dir):
             os.makedirs(self.out_dir)
@@ -298,7 +297,7 @@ class eCommerceData:
         for input_chunk_idx in range(n_chunk):
             path = os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(input_chunk_idx))
             print('processing %s ...' % path)
-            data = pickle.loads(open(path, 'rb').read())
+            data = joblib.load(path)
             for data_idx, (img_idx, enc_cap) in enumerate(data.items()):
                 cate = image_classes[img_idx]
 

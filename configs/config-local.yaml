@@ -3,6 +3,6 @@ DATAPREP:
   OUT_DIR: 'data/datasets/products/train'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
   SKIPVEC_SIZE: 4800
-  CHUNK_SIZE: 5000
+  CHUNK_SIZE: 10000
   NUM_WORKERS: 4
 
