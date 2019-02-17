@@ -206,6 +206,11 @@ class EcommerceDataParser:
                 self.document_list.append((key, wp_i_str))
 
     def train_doc2vec(self):
+        import logging
+        logging.basicConfig(
+            format='%(asctime)s : %(levelname)s : %(message)s',
+            level=logging.INFO)
+
         doc2vec_model_path = os.path.join(self.doc2vec_dir_path, 'doc2vec.model')
 
         self.get_doc_list()
