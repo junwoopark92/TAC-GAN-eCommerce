@@ -193,6 +193,7 @@ class EcommerceDataParser:
     def get_doc_list(self):
         self.document_list = []
         with open(self.parse_data_path, 'r') as data_file:
+            st = time.time()
             for index, data in enumerate(data_file):
                 data = data.split('\t')
                 key = data[0] + '.jpg'
@@ -200,8 +201,9 @@ class EcommerceDataParser:
                 title = data[2]
                 wp_i = self.text2wp(title)
                 i_wp = [self.i2wp[i] for i in wp_i]
-                if index < 5:
-                    self.logger.info("%s %s %s" % (title, i_wp, wp_i))
+                if index % self.n_log_print == 0:
+                    self.logger.info("%s %s %s %d sec" % (title, i_wp, wp_i, time.time() - st))
+                    st = time.time()
                 wp_i_str = list(map(lambda x: str(x), wp_i))
                 self.document_list.append((key, wp_i_str))
 
