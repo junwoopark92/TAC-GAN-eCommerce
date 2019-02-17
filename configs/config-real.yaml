@@ -1,8 +1,22 @@
-DATAPREP:
-  DATA_PATH: 'data/datasets/products/metadata.json.gz'
-  OUT_DIR: 'data/datasets/products/train'
+PARSEMETA:
+  META_PATH: 'data/datasets/products/metadata.json.gz'
+  TITLES_PATH: 'data/spm/titles.txt'
+  SPM_DIR_PATH: 'data/spm'
+  SPM_WP_PATH: 'data/spm/spm.vocab'
+  CATEGORY_PATH: 'data/datasets/products/category.txt'
+  PARSE_DATA_PATH: 'data/datasets/products/products.tsv'
+  DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
-  SKIPVEC_SIZE: 4800
-  CHUNK_SIZE: 50000
-  NUM_WORKERS: 10
+  USE_CATE: []
+  VOCAB_SIZE: 100000
+  N_SAMPLE: 10000000
+  N_LOG_PRINT: 100000
+  DOC_VEC_SIZE: 500
+  DOC2CEC_EPOCHS: 50
+  N_WORKERS: 12
+  WINDOW_SIZE: 3
 
+MAKEDB:
+  TRAIN_DIR_PATH: 'data/datasets/products/train'
+  TEMP_DIR_PATH: 'data/datasets/products/tmp'
+  CHUNK_SIZE: 500000

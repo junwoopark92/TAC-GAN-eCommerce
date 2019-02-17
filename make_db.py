@@ -8,6 +8,8 @@ import random
 import h5py
 import numpy as np
 from misc import get_logger, ges_Aonfig
+from parse_metadata import EcommerceDataParser
+
 from multiprocessing import Pool
 from functools import partial
 from six.moves import cPickle
@@ -57,10 +59,16 @@ def get_one_hot_targets(target_file_path):
 
 class eCommerceData:
     def __init__(self, config):
-        self.out_dir = config['DATAPREP']['OUT_DIR']
-        self.chunk_size = config['DATAPREP']['CHUNK_SIZE']
-        self.num_workers = config['DATAPREP']['NUM_WORKERS']
-        self.skipvec_size = config['DATAPREP']['SKIPVEC_SIZE']
+        self.logger = get_logger()
+        self.parse_data_path = config['PARSEMETA']['PARSE_DATA_PATH']
+        self.category_path = config['PARSEMETA']['CATEGORY_PATH']
+        self.n_log_print = config['PARSEMETA']['N_LOG_PRINT']
+        self.doc_vec_size = config['PARSEMETA']['DOC_VEC_SIZE']
+        self.train_dir_path = config['MAKEDB']['TRAIN_DIR_PATH']
+        self.chunk_size = config['MAKEDB']['CHUNK_SIZE']
+        self.temp_dir_path = config['MAKEDB']['TEMP_DIR_PATH']
+
+        self.parser = EcommerceDataParser(config['PARSEMETA'], use=True)
 
     def get_train_indices(self, size, train_ratio):
         train_indices = np.random.rand(size) < train_ratio
@@ -68,13 +76,13 @@ class eCommerceData:
         return train_indices, train_size
 
     def create_dataset(self, g, size, num_classes):
-        g.create_dataset('skipvec', (size, self.skipvec_size), chunks=True, dtype=np.float32)
+        g.create_dataset('docvec', (size, self.doc_vec_size), chunks=True, dtype=np.float32)
         g.create_dataset('cate', (size, num_classes), chunks=True, dtype=np.int32)
         g.create_dataset('asin', (size,), chunks=True, dtype='S14')
 
     def init_chunk(self, chunk_size, num_classes):
         chunk = {}
-        chunk['skipvec'] = np.zeros(shape=(chunk_size, self.skipvec_size), dtype=np.float32)
+        chunk['docvec'] = np.zeros(shape=(chunk_size, self.doc_vec_size), dtype=np.float32)
         chunk['cate'] = np.zeros(shape=(chunk_size, num_classes), dtype=np.int32)
         chunk['asin'] = []
         chunk['num'] = 0
@@ -82,89 +90,62 @@ class eCommerceData:
 
     def copy_chunk(self, dataset, chunk, offset):
         num = chunk['num']
-        dataset['skipvec'][offset:offset + num] = chunk['skipvec'][:num]
+        dataset['docvec'][offset:offset + num] = chunk['docvec'][:num]
         dataset['cate'][offset:offset + num] = chunk['cate'][:num]
         dataset['asin'][offset:offset + num] = chunk['asin'][:num]
 
-    def save_caption_vectors_products(self, data_dir, train_ratio=0.8):
+    def save_caption_vectors_products(self, train_ratio=0.8):
+        target, one_hot_targets, n_target = get_one_hot_targets(self.category_path)
 
-        caption_path = os.path.join(data_dir, 'products/products.tsv')
-        target_file_path = os.path.join(data_dir, "products/categories.txt")
-        image_captions = {}
-        image_classes = {}
-
-        target, one_hot_targets, n_target = get_one_hot_targets(target_file_path)
-
-        with open(caption_path) as cap_f:
+        train_list = []
+        with open(self.parse_data_path) as cap_f:
             for i, line in enumerate(cap_f):
                 row = line.strip().split('\t')
-                # try:
                 asin = row[0]
                 categories = row[1]
                 title = row[2]
-                # except:
-                #     print(row)
-
                 imgid = asin+'.jpg'
-                image_captions[imgid] = [title]
-                image_classes[imgid] = np.sum(np.asarray([one_hot_encode_str_lbl(class_name, target, one_hot_targets)
+                onehot_cate = np.sum(np.asarray([one_hot_encode_str_lbl(class_name, target, one_hot_targets)
                                                for class_name in categories.split(',')]), axis=0).astype(bool).astype(int)
 
-                if i % 100000 == 0:
-                    print(i, image_captions[imgid])
-                    print(np.sum(image_classes[imgid]), categories)
+                train_list.append((imgid, onehot_cate, title))
 
-                # if i > 20000:
-                #     break
+                if i % self.n_log_print == 0:
+                    print(i, train_list[-1])
 
         chunk_size = self.chunk_size
-        datasize = len(image_captions)
-        print(datasize)
+        datasize = len(train_list)
+        self.logger.info('data size: %d' % datasize)
         n_chunk = datasize // chunk_size + 1
-        image_captions_list = list(image_captions.items())
+
         chunk_list = []
         for index in range(n_chunk):
             start_index = index * chunk_size
             end_index = start_index + chunk_size
-            chunk = image_captions_list[start_index:end_index]
+            chunk = train_list[start_index:end_index]
             chunk_list.append((index, chunk))
 
         for chunk in chunk_list:
-            import skipthoughts
-            model = skipthoughts.load_model()
             index = chunk[0]
-            key_caps = chunk[1]
-            titles = [cap[0] for key, cap in key_caps]
-            keys = [key for key, cap in key_caps]
+            chunk = chunk[1]
             st = time.time()
-            encoded_caption_array = skipthoughts.encode(model, titles)
-            print("Seconds", time.time() - st)
+            temp_list = []
+            for i, (key, cate_vec, title) in enumerate(chunk):
 
-            encoded_captions = {}
-            for i, img in enumerate(keys):
-                encoded_captions[img] = encoded_caption_array[i, :].reshape(1, -1)
-                # if i > 100:
-                #     break
+                title_vec = self.parser.text2vec(title)
+                temp_list.append((key, cate_vec, title_vec))
 
-            ec_pkl_path = (os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(index)))
-            f_out = open(ec_pkl_path, 'wb')
+            chunk_path = (os.path.join(self.temp_dir_path, 'products_tv_{}.pkl'.format(index)))
+            f_out = open(chunk_path, 'wb')
             p = cPickle.Pickler(f_out)
-            p.dump(encoded_captions)
+            p.dump(temp_list)
             p.clear_memo()
             f_out.close()
 
-            del model
-            del skipthoughts
-            del encoded_captions
-            del encoded_caption_array
+            self.logger.info("%s done: %d" % (chunk_path, time.time() - st))
 
-        joblib.dump(image_captions, os.path.join(data_dir, 'products', 'products_caps.pkl'))
-
-        fc_pkl_path = (os.path.join(data_dir, 'products', 'products_tc.pkl'))
-        joblib.dump(image_classes, fc_pkl_path)
-
-        if not os.path.isdir(self.out_dir):
-            os.makedirs(self.out_dir)
+        if not os.path.isdir(self.train_dir_path):
+            os.makedirs(self.train_dir_path)
 
         all_train = train_ratio >= 1.0
         all_dev = train_ratio == 0.0
@@ -179,7 +160,7 @@ class eCommerceData:
             dev_size = 1
             train_size = datasize
 
-        data_fout = h5py.File(os.path.join(self.out_dir, 'data.h5py'), 'w')
+        data_fout = h5py.File(os.path.join(self.train_dir_path, 'data.h5py'), 'w')
         train = data_fout.create_group('train')
         dev = data_fout.create_group('dev')
         self.create_dataset(train, train_size, n_target)
@@ -193,11 +174,10 @@ class eCommerceData:
 
         # make h5file
         for input_chunk_idx in range(n_chunk):
-            path = os.path.join(data_dir, 'products/tmp', 'products_tv_{}.pkl'.format(input_chunk_idx))
+            path = os.path.join(self.temp_dir_path, 'products_tv_{}.pkl'.format(input_chunk_idx))
             print('processing %s ...' % path)
             data = cPickle.loads(open(path, 'rb').read())
-            for data_idx, (img_idx, enc_cap) in enumerate(data.items()):
-                cate = image_classes[img_idx]
+            for data_idx, (img_idx, cate_vec, title_vec) in enumerate(data):
 
                 is_train = train_indices[sample_idx + data_idx]
                 if all_dev:
@@ -207,8 +187,8 @@ class eCommerceData:
 
                 c = chunk['train'] if is_train else chunk['dev']
                 idx = c['num']
-                c['skipvec'][idx] = enc_cap
-                c['cate'][idx] = cate
+                c['docvec'][idx] = title_vec
+                c['cate'][idx] = cate_vec
                 c['asin'].append(np.string_(img_idx))
                 c['num'] += 1
 
@@ -229,20 +209,17 @@ class eCommerceData:
             ds = dataset[div]
             size = num_samples[div]
             ds['cate'].resize((size, n_target))
-            ds['skipvec'].resize((size, self.skipvec_size))
+            ds['docvec'].resize((size, self.doc_vec_size))
 
         data_fout.close()
 
 
-def main(servertype, datadir, dataset):
-    dataset_dir = os.path.join(datadir, "datasets")
-    if dataset == 'flowers':
-        save_caption_vectors_flowers(dataset_dir)
+def main(servertype, dataset):
     if dataset == 'products':
         config_path = './configs/config-{}.yaml'.format(servertype)
         config = ges_Aonfig(config_path)
         data = eCommerceData(config)
-        data.save_caption_vectors_products(dataset_dir)
+        data.save_caption_vectors_products(train_ratio=0.8)
     else:
         print('Preprocessor for this dataset is not available.')
 
