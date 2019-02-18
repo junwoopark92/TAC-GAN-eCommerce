@@ -24,12 +24,14 @@ class ImTextDataset(Dataset):
         self.image_dir = os.path.join(self.data_dir, dataset, 'images')
         self.data = h5py.File(os.path.join(data_dir, dataset, 'train/data.h5py'), 'r')['train']
         self.trans_img = transforms.Compose([transforms.Scale(image_size), transforms.CenterCrop(image_size),
-                                             transforms.ToTensor(),]) # transformation for output image
+                                             transforms.ToTensor(),])# transformation for output image
         self.cap_size_per_img = cap_size_per_img
+        for key in self.data.keys():
+            print(key)
 
     def __getitem__(self, index):
         asin = self.data['asin'][index].decode("utf-8")
-        vec = self.data['skipvec'][index]
+        vec = self.data['docvec'][index]
         cate = self.data['cate'][index]
         # load the image and apply the transformation to it
         image_path = os.path.join(self.image_dir, asin)

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.optim as optim
-from torch.utils.data import  Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader
 from model import NetD, NetG
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
@@ -26,7 +26,6 @@ class TACGAN():
         self.epochs = args.epochs
         self.data_root = args.data_root
         self.dataset = args.dataset
-        self.num_classes = args.num_cls
         self.save_dir = args.save_dir
         self.save_prefix = args.save_prefix
         self.continue_training = args.continue_training
@@ -43,6 +42,11 @@ class TACGAN():
         self.nf_d = args.nf_d
         self.bce_loss = nn.BCELoss()
         self.nll_loss = nn.NLLLoss()
+        self.class_filename = args.class_filename
+        class_path = os.path.join(self.data_root, self.dataset, self.class_filename)
+        with open(class_path) as f:
+            self.num_classes = len([l for l in f])
+        print(self.num_classes)
         self.netD = NetD(n_cls=self.num_classes, n_t=self.nl_d, n_f=self.nf_d)
         self.netG = NetG(n_z=self.n_z, n_l=self.nl_g, n_c=self.nf_g)
         
@@ -234,8 +238,8 @@ if __name__=='__main__':
     parser.add_argument('--image-size', type=int, default=128)
     parser.add_argument('--data-root', type=str, default='data/datasets')
     parser.add_argument('--dataset', type=str, default='products')
-    parser.add_argument('--num-cls', type=int, default=102)
     parser.add_argument('--save-dir', type=str, default='outputs/')
+    parser.add_argument('--class-filename', type=str, default='category.txt')
     parser.add_argument('--save-prefix', type=str, default='')
     parser.add_argument('--save-after', type=int, default=5)
     parser.add_argument('--num-workers', type=int, default=2)
