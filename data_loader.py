@@ -29,15 +29,30 @@ class ImTextDataset(Dataset):
         self.cap_size_per_img = cap_size_per_img
 
     def __getitem__(self, index):
-        with h5py.File(self.data_path, 'r') as data:
-            train = data['train']
-            asin = train['asin'][index].decode("utf-8")
-            vec = train['docvec'][index]
-            cate = train['cate'][index]
+        getflag = False
+        image = None
+        vec = None
+        cate = None
+        while not getflag:
+            with h5py.File(self.data_path, 'r') as data:
+                train = data['train']
+                asin = train['asin'][index].decode("utf-8")
+                vec = train['docvec'][index]
+                cate = train['cate'][index]
 
-        # load the image and apply the transformation to it
-        image_path = os.path.join(self.image_dir, asin)
-        image =Image.open(image_path)
+            # load the image and apply the transformation to it
+            image_path = os.path.join(self.image_dir, asin)
+
+            try:
+                image = Image.open(image_path)
+            except:
+                image = None
+                index = np.random.randint(0, self.__len__())
+                print("image:{} is not available retry index:{}".format(image_path, index))
+
+            if image is not None:
+                getflag = True
+
         image = self.trans_img(image)
         # pick a random encoded caption
         return image, cate, vec
