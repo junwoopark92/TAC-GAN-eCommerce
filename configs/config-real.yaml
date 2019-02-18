@@ -8,15 +8,15 @@ PARSEMETA:
   DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
   USE_CATE: []
-  VOCAB_SIZE: 100000
-  N_SAMPLE: 10000000
-  N_LOG_PRINT: 100000
+  VOCAB_SIZE: 50000
+  N_SAMPLE: 8000000
+  N_LOG_PRINT: 20000
   DOC_VEC_SIZE: 500
   DOC2CEC_EPOCHS: 50
-  N_WORKERS: 12
+  N_WORKERS: 16
   WINDOW_SIZE: 3
 
 MAKEDB:
   TRAIN_DIR_PATH: 'data/datasets/products/train'
   TEMP_DIR_PATH: 'data/datasets/products/tmp'
-  CHUNK_SIZE: 500000
+  CHUNK_SIZE: 50000

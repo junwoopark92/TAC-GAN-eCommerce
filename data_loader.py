@@ -44,8 +44,9 @@ class ImTextDataset(Dataset):
 
     def __len__(self):
         # return len(self.db[self.labels_key])
-        with h5py.File(self.data_path, 'r') as db:
-            lens = len(db['train'])
+        with h5py.File(self.data_path, 'r') as data:
+            db = data['train']
+            lens = len(db['asin'].shape[0])
         return lens
 
     # def __len__(self):
