@@ -166,11 +166,11 @@ class TACGAN():
             netG_loss.backward()    
             self.optimizerG.step()
             
-            netd_loss_sum += netD_loss.data[0]
-            netg_loss_sum += netG_loss.data[0]
+            netd_loss_sum += netD_loss.item()
+            netg_loss_sum += netG_loss.item()
             ### print progress info ###
             print('Epoch %d/%d, %.2f%% completed. Loss_NetD: %.4f, Loss_NetG: %.4f'
-                  %(epoch, self.epochs,(float(i)/len(self.trainset_loader))*100, netD_loss.data[0], netG_loss.data[0]))
+                  %(epoch, self.epochs,(float(i)/len(self.trainset_loader))*100, netD_loss.item(), netG_loss.item()))
 
         end_time = time()
         netd_avg_loss = netd_loss_sum / len(self.trainset_loader)

@@ -22,17 +22,19 @@ class ImTextDataset(Dataset):
         self.data_dir = data_dir
         self.dataset = dataset
         self.image_dir = os.path.join(self.data_dir, dataset, 'images')
-        self.data = h5py.File(os.path.join(data_dir, dataset, 'train/data.h5py'), 'r')['train']
+        self.data_path = os.path.join(data_dir, dataset, 'train/data.h5py')
+        #self.data = h5py.File(os.path.join(data_dir, dataset, 'train/data.h5py'), 'r')['train']
         self.trans_img = transforms.Compose([transforms.Scale(image_size), transforms.CenterCrop(image_size),
                                              transforms.ToTensor(),])# transformation for output image
         self.cap_size_per_img = cap_size_per_img
-        for key in self.data.keys():
-            print(key)
 
     def __getitem__(self, index):
-        asin = self.data['asin'][index].decode("utf-8")
-        vec = self.data['docvec'][index]
-        cate = self.data['cate'][index]
+        with h5py.File(self.data_path, 'r') as data:
+            train = data['train']
+            asin = train['asin'][index].decode("utf-8")
+            vec = train['docvec'][index]
+            cate = train['cate'][index]
+
         # load the image and apply the transformation to it
         image_path = os.path.join(self.image_dir, asin)
         image =Image.open(image_path)
@@ -41,5 +43,11 @@ class ImTextDataset(Dataset):
         return image, cate, vec
 
     def __len__(self):
-        if self.train:
-            return self.data['asin'].shape[0]
+        # return len(self.db[self.labels_key])
+        with h5py.File(self.data_path, 'r') as db:
+            lens = len(db['train'])
+        return lens
+
+    # def __len__(self):
+    #     if self.train:
+    #         return self.data['asin'].shape[0]
