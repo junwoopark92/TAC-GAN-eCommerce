@@ -1,14 +1,14 @@
 # TAC-GAN-eCommerce
 
-# eCommerce Data
+## eCommerce Dataset
 
-# Benchmark
-## 1070 vs DGX 
+## Benchmark
+### 1070 vs DGX 
 
-## Multi GPU DGX
+### Multi GPU DGX
 
-# Text2Image Examples
+## Text2Image Examples
 
-# Demo
+## Demo
 
-# Reference
+## Reference
