@@ -223,8 +223,8 @@ def main(args):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--batch-size', type=int, default=64)
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--batch-size', type=int, default=256)
+    parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--lr', type=float, default=0.0002)
     parser.add_argument('--n-z', type=int, default=100)
     parser.add_argument('--nl-d', type=int, default=100)
@@ -242,6 +242,6 @@ if __name__=='__main__':
     parser.add_argument('--class-filename', type=str, default='category.txt')
     parser.add_argument('--save-prefix', type=str, default='')
     parser.add_argument('--save-after', type=int, default=5)
-    parser.add_argument('--num-workers', type=int, default=2)
+    parser.add_argument('--num-workers', type=int, default=10)
     args = parser.parse_args()
     main(args)

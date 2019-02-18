@@ -33,6 +33,7 @@ class ImTextDataset(Dataset):
         image = None
         vec = None
         cate = None
+        n_retry = 0
         while not getflag:
             with h5py.File(self.data_path, 'r') as data:
                 train = data['train']
@@ -48,7 +49,8 @@ class ImTextDataset(Dataset):
             except:
                 image = None
                 index = np.random.randint(0, self.__len__())
-                print("image:{} is not available retry index:{}".format(image_path, index))
+                n_retry = 1
+                print("image:{} is not available retry index:{} [{}]".format(image_path, index, n_retry))
 
             if image is not None:
                 getflag = True
