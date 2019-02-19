@@ -26,6 +26,7 @@ class TACGAN():
         self.save_dir = args.save_dir
         self.save_prefix = args.save_prefix
         self.continue_training = args.continue_training
+        self.continue_epoch = args.continue_epoch
         self.netG_path = args.netg_path
         self.netD_path = args.netd_path
         self.save_after = args.save_after
@@ -89,7 +90,7 @@ class TACGAN():
         self.trainset_loader = DataLoader(dataset=imtext_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         print("Dataset loaded successfuly")
         # load checkpoints for continuing training
-        if args.continue_training:
+        if self.continue_training:
             self.loadCheckpoints()
              
         # repeat for the number of epochs
@@ -208,9 +209,11 @@ class TACGAN():
             print("Checkpoints for epoch %d saved successfuly" %(epoch))
 
     # load checkpoints to continue training
-    def loadCheckpoints(self):
-        self.netG.load_state_dict(torch.load(self.netG_path))
-        self.netD.load_state_dict(torch.load(self.netD_path))
+    def loadCheckpoints(self, load_epoch):
+        name_netD = "netd_checkpoints/netD_" + self.save_prefix + "_epoch_" + str(epoch) + ".pth"
+        name_netG = "netg_checkpoints/netG_" + self.save_prefix + "_epoch_" + str(epoch) + ".pth"
+        self.netG.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
+        self.netD.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
         print("Checkpoints loaded successfuly")
          
 
@@ -231,6 +234,7 @@ if __name__=='__main__':
     parser.add_argument('--nf-d', type=int, default=64)
     parser.add_argument('--use-cuda', action='store_true')
     parser.add_argument('--continue-training', action='store_true')
+    parser.add_argument('--continue-epoch', type=int, default=0)
     parser.add_argument('--netg-path', type=str, default='')
     parser.add_argument('--netd-path', type=str, default='')
     parser.add_argument('--image-size', type=int, default=128)
