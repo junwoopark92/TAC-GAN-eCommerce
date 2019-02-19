@@ -92,11 +92,7 @@ class TACGAN():
         # load checkpoints for continuing training
         if self.continue_training:
             self.loadCheckpoints()
-            if self.cuda and torch.cuda.is_available():
-                print('CUDA is enabled')
-                self.netD = nn.DataParallel(self.netD).cuda()
-                self.netG = nn.DataParallel(self.netG).cuda()
-             
+
         # repeat for the number of epochs
         netd_losses = []
         netg_losses = []
@@ -216,8 +212,9 @@ class TACGAN():
     def loadCheckpoints(self):
         name_netD = "netd_checkpoints/netD_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
         name_netG = "netg_checkpoints/netG_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
-        self.netG.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
-        self.netD.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
+
+        self.netG.module.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
+        self.netD.module.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
         print("Checkpoints loaded successfuly")
          
 
