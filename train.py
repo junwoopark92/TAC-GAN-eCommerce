@@ -32,6 +32,7 @@ class TACGAN():
         self.trainset_loader = None
         self.evalset_loader = None  
         self.num_workers = args.num_workers
+        self.docvec_size = args.docvec_size
         self.n_z = args.n_z # length of the noise vector
         self.nl_d = args.nl_d
         self.nl_g = args.nl_g
@@ -44,8 +45,8 @@ class TACGAN():
         with open(class_path) as f:
             self.num_classes = len([l for l in f])
         print(self.num_classes)
-        self.netD = NetD(n_cls=self.num_classes, n_t=self.nl_d, n_f=self.nf_d)
-        self.netG = NetG(n_z=self.n_z, n_l=self.nl_g, n_c=self.nf_g)
+        self.netD = NetD(n_cls=self.num_classes, n_t=self.nl_d, n_f=self.nf_d, docvec_size=self.docvec_size)
+        self.netG = NetG(n_z=self.n_z, n_l=self.nl_g, n_c=self.nf_g, n_t=self.docvec_size)
         
         # convert to cuda tensors
         if self.cuda and torch.cuda.is_available():
@@ -233,6 +234,7 @@ if __name__=='__main__':
     parser.add_argument('--netg-path', type=str, default='')
     parser.add_argument('--netd-path', type=str, default='')
     parser.add_argument('--image-size', type=int, default=128)
+    parser.add_argument('--docvec-size', type=int, default=100)
     parser.add_argument('--data-root', type=str, default='data/datasets')
     parser.add_argument('--dataset', type=str, default='products')
     parser.add_argument('--save-dir', type=str, default='outputs/')
