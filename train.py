@@ -48,7 +48,10 @@ class TACGAN():
         print(self.num_classes)
         self.netD = NetD(n_cls=self.num_classes, n_t=self.nl_d, n_f=self.nf_d, docvec_size=self.docvec_size)
         self.netG = NetG(n_z=self.n_z, n_l=self.nl_g, n_c=self.nf_g, n_t=self.docvec_size)
-        
+
+        if self.continue_training:
+            self.loadCheckpoints()
+
         # convert to cuda tensors
         if self.cuda and torch.cuda.is_available():
             print('CUDA is enabled')
@@ -90,8 +93,6 @@ class TACGAN():
         self.trainset_loader = DataLoader(dataset=imtext_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         print("Dataset loaded successfuly")
         # load checkpoints for continuing training
-        if self.continue_training:
-            self.loadCheckpoints()
 
         # repeat for the number of epochs
         netd_losses = []
@@ -213,8 +214,8 @@ class TACGAN():
         name_netD = "netd_checkpoints/netD_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
         name_netG = "netg_checkpoints/netG_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
 
-        self.netG.module.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
-        self.netD.module.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
+        self.netG.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
+        self.netD.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
         print("Checkpoints loaded successfuly")
          
 
