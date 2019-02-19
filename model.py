@@ -84,6 +84,7 @@ class NetD(nn.Module):
         self.n_cls = n_cls
         self.n_t = n_t
         self.m_d = m_d
+        self.docvec_size = docvec_size
         # state size: 128 x 128
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=n_f, kernel_size=4, stride=2, padding=1, bias=True)
         self.conv1_bn = nn.BatchNorm2d(n_f)
@@ -101,7 +102,7 @@ class NetD(nn.Module):
         # state size: 8 x 8
 
         # linear transformation for the skip-thought vector
-        self.fc_emb = nn.Linear(in_features=100, out_features=n_t)
+        self.fc_emb = nn.Linear(in_features=self.docvec_size, out_features=n_t)
         self.fc_t = nn.Linear(in_features=m_d*m_d*n_f*8, out_features=n_f)
         # linear transformation for the discriminator
         self.fc_d = nn.Linear(in_features=n_f, out_features=1)
