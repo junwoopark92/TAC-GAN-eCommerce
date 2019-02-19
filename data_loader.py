@@ -15,7 +15,7 @@ class ImTextDataset(Dataset):
     train      : determines which part of the dataset to use. By default:train
     image_size : intented image size. By default: 128x128
     '''
-    def __init__(self, data_dir, dataset='products', train=True, image_size=128, cap_size_per_img=1):
+    def __init__(self, data_dir, dataset='products', train=True, image_size=128, cap_size_per_img=1, cate=None):
         super(ImTextDataset, self).__init__()
         
         self.train = train  # determines whether to return train or validation images
@@ -49,7 +49,7 @@ class ImTextDataset(Dataset):
             except:
                 image = None
                 index = np.random.randint(0, self.__len__())
-                n_retry = 1
+                n_retry += 1
                 print("image:{} is not available retry index:{} [{}]".format(image_path, index, n_retry))
 
             if image is not None:

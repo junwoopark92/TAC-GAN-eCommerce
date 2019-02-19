@@ -4,6 +4,7 @@ import re
 import tqdm
 import fire
 import time
+import numpy as np
 from collections import Counter
 import sentencepiece as spm
 from misc import get_logger, ges_Aonfig
@@ -64,7 +65,7 @@ class EcommerceDataParser:
         self.logger.info('TRAIN DOC2VEC')
         self.train_doc2vec()
         self.logger.info('TRAIN DOC2VEC DONE: %d sec' % (time.time() - t))
-        q = ['901', '1879', '8', '2701', '3442', '61', '44', '12']
+        q = self.text2wp('samsung notebook ssd 256gb ram 8gb')
         self.query_doc2vec_topn(q)
 
     def remove_stopwords(self, text):
@@ -93,6 +94,9 @@ class EcommerceDataParser:
         g = gzip.open(self.meta_path, 'r')
         for i, l in enumerate(g):
             product = eval(l)
+            n_read = int(self.n_log_print) * 10
+            if i % n_read == 0:
+                self.logger.info("Read %d lines..." % i)
 
             skip_flag = False
             for col in self.use_cols:
@@ -103,24 +107,28 @@ class EcommerceDataParser:
                 continue
 
             asin = product['asin']
+            url = product['imUrl']
             raw_categories = sum(list(map(lambda x:[x[0]] if len(x) > 0 else ['-1'], product['categories'])), [])
             raw_categories = list(map(lambda x: ' '.join(x.replace('\n', ' ').replace('\t', ' ').replace(',', ' ').split())
                                       if len(x.replace(' ', '')) > 0 else '-1', raw_categories))
-            categories = ",".join(raw_categories)
+            category = raw_categories[0]
+            #",".join(raw_categories)
+
+            if not category in self.use_cate:
+                continue
 
             title = self.text_cleaning(product['title'])
             if len(title) == 0:
                 continue
 
             titles.append(title)
-            data_list.append((asin, categories, title))
+            data_list.append((asin, category, title, url))
 
-            for category in raw_categories:
-                if category not in category_list:
-                    category_list.append(category)
+            if category not in category_list:
+                category_list.append(category)
 
-            if i % self.n_log_print == 0:
-                self.logger.info("%s\t%s\t%s %s -> %s [%s]" % (i, asin, product['title'], product['categories'], title, categories))
+            if len(data_list) % self.n_log_print == 0:
+                self.logger.info("%s\t%s\t%s %s -> %s [%s]" % (i, asin, product['title'], product['categories'], title, category))
 
             if i > self.n_sample:
                 break
@@ -129,7 +137,7 @@ class EcommerceDataParser:
 
         with open(self.parse_data_path, 'w') as data_file:
             for data in data_list:
-                output = "{}\t{}\t{}\n".format(data[0], data[1], data[2])
+                output = "{}\t{}\t{}\t{}\n".format(data[0], data[1], data[2], data[3])
                 data_file.write(output)
 
         with open(self.category_path, 'w') as data_file:
@@ -243,6 +251,8 @@ class EcommerceDataParser:
     def query_doc2vec_topn(self, q):
         if type(q) == str:
             q = q.split()
+
+        q = np.asarray(q).astype(str)
 
         vector = self.model.infer_vector(q)
         sims = self.model.docvecs.most_similar([vector])

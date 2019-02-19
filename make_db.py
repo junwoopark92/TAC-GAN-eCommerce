@@ -33,7 +33,6 @@ def one_hot_encode_str_lbl(lbl, target, one_hot_targets):
 
 def get_one_hot_targets(target_file_path):
     target = []
-    one_hot_targets = []
     n_target = 0
     try :
         with open(target_file_path) as f :
