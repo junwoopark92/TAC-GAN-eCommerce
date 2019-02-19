@@ -53,8 +53,8 @@ class TACGAN():
             print('CUDA is enabled')
             self.netD = nn.DataParallel(self.netD).cuda()
             self.netG = nn.DataParallel(self.netG).cuda()
-            self.bce_loss = nn.DataParallel(self.bce_loss).cuda()
-            self.nll_loss = nn.DataParallel(self.nll_loss).cuda()
+            self.bce_loss = self.bce_loss.cuda()
+            self.nll_loss = self.nll_loss.cuda()
 
         # optimizers for netD and netG
         self.optimizerD = optim.Adam(params=self.netD.parameters(), lr=self.lr, betas=(0.5, 0.999))
