@@ -204,8 +204,8 @@ class TACGAN():
         if epoch%self.save_after==0:
             name_netD = "netd_checkpoints/netD_" + self.save_prefix + "_epoch_" + str(epoch) + ".pth"
             name_netG = "netg_checkpoints/netG_" + self.save_prefix + "_epoch_" + str(epoch) + ".pth"
-            torch.save(self.netD.state_dict(), os.path.join(self.save_dir, name_netD))
-            torch.save(self.netG.state_dict(), os.path.join(self.save_dir, name_netG))
+            torch.save(self.netD.module.state_dict(), os.path.join(self.save_dir, name_netD))
+            torch.save(self.netG.module.state_dict(), os.path.join(self.save_dir, name_netG))
             print("Checkpoints for epoch %d saved successfuly" %(epoch))
 
     # load checkpoints to continue training
