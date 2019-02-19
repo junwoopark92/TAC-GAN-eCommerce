@@ -7,12 +7,12 @@ PARSEMETA:
   PARSE_DATA_PATH: 'data/datasets/products/products.tsv'
   DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
-  USE_CATE: []
-  VOCAB_SIZE: 20000
-  N_SAMPLE: 100000
-  N_LOG_PRINT: 10000
-  DOC_VEC_SIZE: 500
-  DOC2CEC_EPOCHS: 50
+  USE_CATE: ['Grocery & Gourmet Food', 'Computers' ,'Sports & Outdoors']
+  VOCAB_SIZE: 10000
+  N_SAMPLE: 5000000
+  N_LOG_PRINT: 1000
+  DOC_VEC_SIZE: 100
+  DOC2CEC_EPOCHS: 40
   N_WORKERS: 4
   WINDOW_SIZE: 3
 

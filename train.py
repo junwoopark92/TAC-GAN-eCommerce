@@ -1,15 +1,12 @@
 import argparse
 import os
 from time import time
-import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from model import NetD, NetG
-import torchvision.datasets as dset
-import torchvision.transforms as transforms
 from data_loader import ImTextDataset
 import matplotlib
 matplotlib.use('Agg')
@@ -53,10 +50,10 @@ class TACGAN():
         # convert to cuda tensors
         if self.cuda and torch.cuda.is_available():
             print('CUDA is enabled')
-            self.netD = self.netD.cuda()
-            self.netG = self.netG.cuda()
-            self.bce_loss = self.bce_loss.cuda()
-            self.nll_loss = self.nll_loss.cuda() 
+            self.netD = nn.DataParallel(self.netD).cuda()
+            self.netG = nn.DataParallel(self.netG).cuda()
+            self.bce_loss = nn.DataParallel(self.bce_loss).cuda()
+            self.nll_loss = nn.DataParallel(self.nll_loss).cuda()
 
         # optimizers for netD and netG
         self.optimizerD = optim.Adam(params=self.netD.parameters(), lr=self.lr, betas=(0.5, 0.999))
@@ -223,7 +220,7 @@ def main(args):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--batch-size', type=int, default=256)
+    parser.add_argument('--batch-size', type=int, default=32)
     parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--lr', type=float, default=0.0002)
     parser.add_argument('--n-z', type=int, default=100)
@@ -242,6 +239,6 @@ if __name__=='__main__':
     parser.add_argument('--class-filename', type=str, default='category.txt')
     parser.add_argument('--save-prefix', type=str, default='')
     parser.add_argument('--save-after', type=int, default=5)
-    parser.add_argument('--num-workers', type=int, default=10)
+    parser.add_argument('--num-workers', type=int, default=2)
     args = parser.parse_args()
     main(args)

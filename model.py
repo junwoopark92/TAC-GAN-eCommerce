@@ -11,7 +11,7 @@ class NetG(nn.Module):
     n_c  : number of feature maps after first conv layer
     '''
 
-    def __init__(self, n_z=100, n_l=100, n_t=500, n_c=64):
+    def __init__(self, n_z=100, n_l=100, n_t=100, n_c=64):
         super(NetG, self).__init__()
         self.n_z = n_z
         self.n_l = n_l
@@ -77,7 +77,7 @@ class NetD(nn.Module):
     m_d   : size of the image before concatenation with the embedding
     '''
     
-    def __init__(self, n_cls=102, n_t=100, n_f=64, m_d=8):
+    def __init__(self, n_cls=102, n_t=100, n_f=128, m_d=8):
         super(NetD, self).__init__()
         
         self.n_f = n_f
@@ -101,7 +101,7 @@ class NetD(nn.Module):
         # state size: 8 x 8
 
         # linear transformation for the skip-thought vector
-        self.fc_emb = nn.Linear(in_features=500, out_features=n_t)
+        self.fc_emb = nn.Linear(in_features=100, out_features=n_t)
         self.fc_t = nn.Linear(in_features=m_d*m_d*n_f*8, out_features=n_f)
         # linear transformation for the discriminator
         self.fc_d = nn.Linear(in_features=n_f, out_features=1)

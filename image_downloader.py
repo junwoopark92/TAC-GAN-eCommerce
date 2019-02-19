@@ -3,29 +3,24 @@ from PIL import Image
 from io import BytesIO
 from tqdm import tqdm
 import gzip
+from multiprocessing.pool import ThreadPool
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def parse_data(path):
     key_url_list = []
-    g = gzip.open(path, 'r')
-    for i, l in enumerate(g):
-        product = eval(l)
+    with open('data/datasets/products/products.tsv') as f:
+        for i, l in enumerate(f):
+            row = l.split('\t')
+            asin = row[0]
+            url = row[3].strip() if len(row) > 3 else None
+            if i % 10000 == 0:
+                print('read lines: {}'.format(i))
 
-        if 'asin' not in product.keys():
-            key_url_list.append((None, None))
-            continue
-        if 'imUrl' not in product.keys():
-            key_url_list.append((product['asin'], None))
-            continue
-
-        key_url_list.append((product['asin'], product['imUrl']))
-        if i % 10000 == 0:
-            print(i, product['asin'], product['title'], product['imUrl'])
-
-        if len(key_url_list) > 1000:
-            return key_url_list
+            key_url_list.append((asin, url))
+            if i % 1000 == 0:
+                print(i,row)
 
     return key_url_list
 
@@ -44,7 +39,8 @@ def download_image(key_url):
         http = urllib3.PoolManager()
         response = http.request('GET', url)
         image_data = response.data
-    except:
+    except Exception as e:
+        print(e)
         print('Warning: Could not download image %s from %s' % (key, url))
         return
 
@@ -76,9 +72,9 @@ def run():
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
-    key_url_list = parse_data(data_file)
+    key_url_list = parse_data(data_file)[-130000:]
 
-    pool = multiprocessing.Pool(processes=2)
+    pool = ThreadPool(processes=20)
 
     with tqdm(total=len(key_url_list)) as t:
         for _ in pool.imap_unordered(download_image, key_url_list):
