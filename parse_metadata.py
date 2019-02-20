@@ -121,6 +121,10 @@ class EcommerceDataParser:
             raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(), raw_categories[:self.cate_depth]))
             category = '>'.join(raw_categories)
 
+            # hardcoding erase cate
+            if 'Accessories' in category:
+                continue
+
             title = self.text_cleaning(product['title'])
             if len(title) == 0:
                 continue
