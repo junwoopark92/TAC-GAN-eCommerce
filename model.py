@@ -115,10 +115,14 @@ class NetD(nn.Module):
         # intialize the weights
         self.intialize_weights_()
 
-        self.noise = GaussianNoise()
+    def gaussian(self, ins, is_training, mean, stddev):
+        if is_training:
+            noise = Variable(ins.data.new(ins.size()).normal_(mean, stddev))
+            return ins + noise
+        return ins
 
     def forward(self, input, skip_v):
-        input = self.noise(input)
+        input = self.gaussian(input, True, 0, 0.1)
         x = self.LeakyReLU(self.conv1_bn(self.conv1(input)))
         x = self.LeakyReLU(self.conv2_bn(self.conv2(x)))
         x = self.LeakyReLU(self.conv3_bn(self.conv3(x)))
@@ -142,33 +146,3 @@ class NetD(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
-
-
-class GaussianNoise(nn.Module):
-    """Gaussian noise regularizer.
-
-    Args:
-        sigma (float, optional): relative standard deviation used to generate the
-            noise. Relative means that it will be multiplied by the magnitude of
-            the value your are adding the noise to. This means that sigma can be
-            the same regardless of the scale of the vector.
-        is_relative_detach (bool, optional): whether to detach the variable before
-            computing the scale of the noise. If `False` then the scale of the noise
-            won't be seen as a constant but something to optimize: this will bias the
-            network to generate vectors with smaller values.
-    """
-
-    def __init__(self, sigma=0.1, is_relative_detach=True):
-        super().__init__()
-        self.sigma = sigma
-        self.device = 'cuda:{}'.format(torch.cuda.current_device())
-        self.is_relative_detach = is_relative_detach
-        self.noise = torch.tensor(0.0).float().to(self.device)
-        self.training = True
-
-    def forward(self, x):
-        if self.training and self.sigma != 0:
-            scale = self.sigma * x.detach() if self.is_relative_detach else self.sigma * x
-            sampled_noise = self.noise.repeat(*x.size()).normal_() * scale
-            x = x + sampled_noise
-        return x
