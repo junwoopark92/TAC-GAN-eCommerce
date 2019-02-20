@@ -131,7 +131,7 @@ class EcommerceDataParser:
             if 'Accessories' in category:
                 continue
 
-            title = self.text_cleaning(catenames + brand + product['title'])
+            title = self.text_cleaning(' '.join([catenames, brand, product['title']]))
             if len(title) == 0:
                 continue
 

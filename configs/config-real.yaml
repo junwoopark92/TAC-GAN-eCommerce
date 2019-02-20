@@ -8,12 +8,12 @@ PARSEMETA:
   DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
   USE_CATE: ['Musical Instruments']
-  CATE_DEPTH: 3
+  CATE_DEPTH: 4
   VOCAB_SIZE: 10000
   N_SAMPLE: 10000000
   N_LOG_PRINT: 10000
   DOC_VEC_SIZE: 500
-  DOC2CEC_EPOCHS: 40
+  DOC2CEC_EPOCHS: 100
   N_WORKERS: 20
   WINDOW_SIZE: 3
 
