@@ -217,7 +217,6 @@ class TACGAN():
     def loadCheckpoints(self):
         name_netD = "netd_checkpoints/netD_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
         name_netG = "netg_checkpoints/netG_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
-
         self.netG.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
         self.netD.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
         print("Checkpoints loaded successfuly")
