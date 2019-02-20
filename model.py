@@ -77,7 +77,7 @@ class NetD(nn.Module):
     m_d   : size of the image before concatenation with the embedding
     '''
     
-    def __init__(self, n_cls=102, n_t=100, n_f=128, docvec_size=100, m_d=8):
+    def __init__(self, n_cls=102, n_t=100, n_f=64, docvec_size=100, m_d=8):
         super(NetD, self).__init__()
         
         self.n_f = n_f

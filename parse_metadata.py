@@ -109,13 +109,17 @@ class EcommerceDataParser:
             asin = product['asin']
             url = product['imUrl']
             raw_categories = sum(list(map(lambda x:[x[0]] if len(x) > 0 else ['-1'], product['categories'])), [])
+
+            category = raw_categories[0]
+            if not category in self.use_cate:
+                continue
+
             raw_categories = list(map(lambda x: ' '.join(x.replace('\n', ' ').replace('\t', ' ').replace(',', ' ').split())
                                       if len(x.replace(' ', '')) > 0 else '-1', raw_categories))
             category = raw_categories[0]
             #",".join(raw_categories)
 
-            if not category in self.use_cate:
-                continue
+
 
             title = self.text_cleaning(product['title'])
             if len(title) == 0:

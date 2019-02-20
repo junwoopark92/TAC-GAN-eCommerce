@@ -209,13 +209,17 @@ class TACGAN():
             torch.save(self.netG.module.state_dict(), os.path.join(self.save_dir, name_netG))
             print("Checkpoints for epoch %d saved successfuly" %(epoch))
 
+    # SAVE: data parallel model => add .module
+    # LOAD: create model and load checkpoints(not add .module) and wrap nn.DataParallel
+    # this is for fitting prefix
+
     # load checkpoints to continue training
     def loadCheckpoints(self):
         name_netD = "netd_checkpoints/netD_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
         name_netG = "netg_checkpoints/netG_" + self.save_prefix + "_epoch_" + str(self.continue_epoch) + ".pth"
 
-        self.netG.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
-        self.netD.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
+        self.netG.load_state_dict(torch.load(os.path.join(self.save_dir, name_netG)))
+        self.netD.load_state_dict(torch.load(os.path.join(self.save_dir, name_netD)))
         print("Checkpoints loaded successfuly")
          
 
