@@ -7,8 +7,9 @@ PARSEMETA:
   PARSE_DATA_PATH: 'data/datasets/products/products.tsv'
   DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
-  USE_CATE: [['Musical Instruments', 'Amazon Instant Video']]
-  VOCAB_SIZE: 50000
+  USE_CATE: ['Musical Instruments']
+  CATE_DEPTH: 2
+  VOCAB_SIZE: 10000
   N_SAMPLE: 10000000
   N_LOG_PRINT: 10000
   DOC_VEC_SIZE: 500
@@ -19,4 +20,4 @@ PARSEMETA:
 MAKEDB:
   TRAIN_DIR_PATH: 'data/datasets/products/train'
   TEMP_DIR_PATH: 'data/datasets/products/tmp'
-  CHUNK_SIZE: 50000
+  CHUNK_SIZE: 10000

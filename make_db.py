@@ -104,9 +104,7 @@ class eCommerceData:
                 categories = row[1]
                 title = row[2]
                 imgid = asin+'.jpg'
-                onehot_cate = np.sum(np.asarray([one_hot_encode_str_lbl(class_name, target, one_hot_targets)
-                                               for class_name in categories.split(',')]), axis=0).astype(bool).astype(int)
-
+                onehot_cate = one_hot_encode_str_lbl(categories, target, one_hot_targets)
                 train_list.append((imgid, onehot_cate, title))
 
                 if i % self.n_log_print == 0:

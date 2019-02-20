@@ -25,6 +25,7 @@ class EcommerceDataParser:
         self.use_cate = config['USE_CATE']
         self.n_sample = config['N_SAMPLE']
         self.vocab_size = config['VOCAB_SIZE']
+        self.cate_depth = config['CATE_DEPTH']
         self.n_log_print = config['N_LOG_PRINT']
 
         self.doc_vec_size = config['DOC_VEC_SIZE']
@@ -108,18 +109,17 @@ class EcommerceDataParser:
 
             asin = product['asin']
             url = product['imUrl']
-            raw_categories = sum(list(map(lambda x:[x[0]] if len(x) > 0 else ['-1'], product['categories'])), [])
 
-            category = raw_categories[0]
-            if not category in self.use_cate:
+            raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
+
+            if raw_categories is None:
                 continue
 
-            raw_categories = list(map(lambda x: ' '.join(x.replace('\n', ' ').replace('\t', ' ').replace(',', ' ').split())
-                                      if len(x.replace(' ', '')) > 0 else '-1', raw_categories))
-            category = raw_categories[0]
-            #",".join(raw_categories)
+            if not raw_categories[0] in self.use_cate:
+                continue
 
-
+            raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(), raw_categories[:self.cate_depth]))
+            category = '>'.join(raw_categories)
 
             title = self.text_cleaning(product['title'])
             if len(title) == 0:
