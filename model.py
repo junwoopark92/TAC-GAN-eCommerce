@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from torch.autograd import Variable
 
 # NetG - Generator
 class NetG(nn.Module):
