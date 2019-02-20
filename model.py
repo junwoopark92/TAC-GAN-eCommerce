@@ -162,12 +162,12 @@ class GaussianNoise(nn.Module):
         super().__init__()
         self.sigma = sigma
         self.is_relative_detach = is_relative_detach
-        self.noise = torch.tensor(0.0)
+        self.noise = torch.tensor(0.0).float()
         self.training = True
 
     def forward(self, x):
         if self.training and self.sigma != 0:
             scale = self.sigma * x.detach() if self.is_relative_detach else self.sigma * x
-            sampled_noise = self.noise.repeat(*x.size()).float().normal_() * scale
+            sampled_noise = self.noise.repeat(*x.size()).normal_() * scale
             x = x + sampled_noise
         return x
