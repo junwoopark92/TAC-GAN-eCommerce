@@ -8,6 +8,7 @@ from PIL import Image
 import numpy.random as random
 import h5py
 
+
 class ImTextDataset(Dataset):
     '''
     data_dir   : path to the directory that contains the dataset files
@@ -24,7 +25,7 @@ class ImTextDataset(Dataset):
         self.image_dir = os.path.join(self.data_dir, dataset, 'images')
         self.data_path = os.path.join(data_dir, dataset, 'train/data.h5py')
         #self.data = h5py.File(os.path.join(data_dir, dataset, 'train/data.h5py'), 'r')['train']
-        self.trans_img = transforms.Compose([transforms.Scale(image_size), transforms.CenterCrop(image_size),
+        self.trans_img = transforms.Compose([transforms.Resize(image_size), transforms.CenterCrop(image_size),
                                              transforms.ToTensor(),])# transformation for output image
         self.cap_size_per_img = cap_size_per_img
 

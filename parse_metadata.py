@@ -109,6 +109,8 @@ class EcommerceDataParser:
 
             asin = product['asin']
             url = product['imUrl']
+            brand = product['brand'] if 'brand' in product.keys() else ''
+            catenames = ' '.join(list(map(lambda x: ' '.join(x), product['categories'])))
 
             raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
 
@@ -122,10 +124,14 @@ class EcommerceDataParser:
             category = '>'.join(raw_categories)
 
             # hardcoding erase cate
+            # cates = category.split('>')
+            # cates = cates[1] if len(cates) > 2 else None
+            # if cates is None or 'CellPhones' not in cates:
+            #     continue
             if 'Accessories' in category:
                 continue
 
-            title = self.text_cleaning(product['title'])
+            title = self.text_cleaning(catenames + brand + product['title'])
             if len(title) == 0:
                 continue
 
