@@ -110,7 +110,7 @@ class EcommerceDataParser:
             asin = product['asin']
             url = product['imUrl']
             brand = product['brand'] if 'brand' in product.keys() else ''
-            catenames = ' '.join(list(map(lambda x: ' '.join(x), product['categories'])))
+            catenames = ' '.join(list(map(lambda x: ' '.join(x), product['categories']))[1:])
 
             raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
 
@@ -121,7 +121,7 @@ class EcommerceDataParser:
                 continue
 
             raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(), raw_categories[:self.cate_depth]))
-            category = '>'.join(raw_categories[1:])
+            category = '>'.join(raw_categories)
 
             # hardcoding erase cate
             cates = category.split('>')
