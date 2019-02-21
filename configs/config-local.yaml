@@ -9,6 +9,7 @@ PARSEMETA:
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
   USE_CATE: ['Musical Instruments'] #['Cell Phones & Accessories']
   CATE_DEPTH: 4
+  N_SHUFFLE: 3
   VOCAB_SIZE: 10000
   N_SAMPLE: 10000000
   N_LOG_PRINT: 1000

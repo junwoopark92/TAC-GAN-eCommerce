@@ -4,11 +4,17 @@ import re
 import tqdm
 import fire
 import time
+import random
 import numpy as np
 from collections import Counter
 import sentencepiece as spm
 from misc import get_logger, ges_Aonfig
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+
+
+def shuffle(ls):
+    random.shuffle(ls)
+    return ls
 
 
 class EcommerceDataParser:
@@ -25,6 +31,7 @@ class EcommerceDataParser:
         self.use_cate = config['USE_CATE']
         self.n_sample = config['N_SAMPLE']
         self.vocab_size = config['VOCAB_SIZE']
+        self.n_shuffle = config['N_SHUFFLE']
         self.cate_depth = config['CATE_DEPTH']
         self.n_log_print = config['N_LOG_PRINT']
 
@@ -110,7 +117,7 @@ class EcommerceDataParser:
             asin = product['asin']
             url = product['imUrl']
             brand = product['brand'] if 'brand' in product.keys() else ''
-            catenames = ' '.join(list(map(lambda x: ' '.join(x), product['categories']))[1:])
+            catenames = ' '.join(list(map(lambda x: ' '.join(shuffle(x[1:])), product['categories'])))
 
             raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
 
@@ -132,12 +139,19 @@ class EcommerceDataParser:
             #if 'Accessories' in category:
             #     continue
 
-            title = self.text_cleaning(' '.join([catenames, brand, product['title']]))
+            title = self.text_cleaning(' '.join(shuffle([catenames, brand, product['title']])))
             if len(title) == 0:
                 continue
 
-            titles.append(title)
-            data_list.append((asin, category, title, url))
+            shuffle_titles = set()
+            shuffle_titles.add(title)
+            for _ in range(self.n_shuffle):
+                shuffle_titles.add(self.text_cleaning(' '.join(shuffle([catenames, brand, product['title']]))))
+
+            shuffle_titles = list(shuffle_titles)
+            titles += shuffle_titles
+            for title in shuffle_titles:
+                data_list.append((asin, category, title, url))
 
             if category not in category_list:
                 category_list.append(category)
