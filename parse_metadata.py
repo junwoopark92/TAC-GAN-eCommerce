@@ -121,7 +121,7 @@ class EcommerceDataParser:
                 continue
 
             raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(), raw_categories[:self.cate_depth]))
-            category = '>'.join(raw_categories)[1:]
+            category = '>'.join(raw_categories[1:])
 
             # hardcoding erase cate
             cates = category.split('>')
