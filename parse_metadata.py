@@ -121,15 +121,16 @@ class EcommerceDataParser:
                 continue
 
             raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(), raw_categories[:self.cate_depth]))
-            category = '>'.join(raw_categories)
+            category = '>'.join(raw_categories)[1:]
 
             # hardcoding erase cate
-            # cates = category.split('>')
-            # cates = cates[1] if len(cates) > 2 else None
-            # if cates is None or 'CellPhones' not in cates:
-            #     continue
-            if 'Accessories' in category:
+            cates = category.split('>')
+            cates = cates[1] if len(cates) > 2 else None
+            if cates is None or 'Guitars' not in cates:
                 continue
+
+            #if 'Accessories' in category:
+            #     continue
 
             title = self.text_cleaning(' '.join([catenames, brand, product['title']]))
             if len(title) == 0:
