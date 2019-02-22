@@ -131,13 +131,13 @@ class EcommerceDataParser:
             category = '>'.join(raw_categories)
 
             # hardcoding erase cate
-            cates = category.split('>')
-            cates = cates[1] if len(cates) > 2 else None
-            if cates is None or 'Guitars' not in cates:
-                continue
-
-            if 'BeginnerKits' in category:
-                continue
+            # cates = category.split('>')
+            # cates = cates[1] if len(cates) > 2 else None
+            # if cates is None or 'Guitars' not in cates:
+            #     continue
+            #
+            # if 'BeginnerKits' in category:
+            #     continue
 
             title = self.text_cleaning(' '.join(shuffle([catenames, brand, product['title']])))
             if len(title) == 0:
