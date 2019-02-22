@@ -136,8 +136,8 @@ class EcommerceDataParser:
             if cates is None or 'Guitars' not in cates:
                 continue
 
-            #if 'Accessories' in category:
-            #     continue
+            if 'BeginnerKits' in category:
+                continue
 
             title = self.text_cleaning(' '.join(shuffle([catenames, brand, product['title']])))
             if len(title) == 0:
