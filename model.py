@@ -122,12 +122,12 @@ class NetD(nn.Module):
         return ins
 
     def forward(self, input, skip_v):
-        input = self.gaussian(input, True, 0, 0.1)
+        #input = self.gaussian(input, True, 0, 0.1)
         x = self.LeakyReLU(self.conv1_bn(self.conv1(input)))
         x = self.LeakyReLU(self.conv2_bn(self.conv2(x)))
         x = self.LeakyReLU(self.conv3_bn(self.conv3(x)))
         x = self.LeakyReLU(self.conv4_bn(self.conv4(x)))
-        skip_v = self.gaussian(skip_v, True, 0, 0.1)
+        #skip_v = self.gaussian(skip_v, True, 0, 0.1)
         emb = self.LeakyReLU(self.fc_emb(skip_v))
         emb = emb.view(emb.size(0), self.n_t, 1, 1) # state size: batch x n_t x 1 x 1
         emb = emb.repeat(1, 1, self.m_d, self.m_d) # state size: batch x n_t x 8 x 8
