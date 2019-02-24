@@ -107,6 +107,7 @@ class EcommerceDataParser:
                 self.logger.info("Read %d lines..." % i)
 
             skip_flag = False
+
             for col in self.use_cols:
                 if col not in product.keys():
                     skip_flag = True
@@ -124,10 +125,11 @@ class EcommerceDataParser:
             if raw_categories is None:
                 continue
 
-            if not raw_categories[0] in self.use_cate:
+            if len(self.use_cate) > 0 and raw_categories[0] not in self.use_cate:
                 continue
 
-            raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(), raw_categories[:self.cate_depth]))
+            raw_categories = list(map(lambda x: x.replace('>', '').replace(' ', '').strip(),
+                                      raw_categories[:self.cate_depth]))
             category = '>'.join(raw_categories)
 
             # hardcoding erase cate

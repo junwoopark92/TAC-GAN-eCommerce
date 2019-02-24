@@ -7,7 +7,7 @@ PARSEMETA:
   PARSE_DATA_PATH: 'data/datasets/products/products.tsv'
   DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
-  USE_CATE: ['Musical Instruments'] #['Cell Phones & Accessories']
+  USE_CATE: [] #['Musical Instruments'] #['Cell Phones & Accessories']
   CATE_DEPTH: 4
   N_SHUFFLE: 3
   VOCAB_SIZE: 10000
