@@ -73,7 +73,7 @@ class EcommerceDataParser:
         self.logger.info('TRAIN DOC2VEC')
         self.train_doc2vec()
         self.logger.info('TRAIN DOC2VEC DONE: %d sec' % (time.time() - t))
-        q = self.text2wp('samsung notebook ssd 256gb ram 8gb')
+        q = self.text2wp('yamaha classical nylon string guitars')
         self.query_doc2vec_topn(q)
 
     def remove_stopwords(self, text):
@@ -118,7 +118,7 @@ class EcommerceDataParser:
             asin = product['asin']
             url = product['imUrl']
             brand = product['brand'] if 'brand' in product.keys() else ''
-            catenames = ' '.join(list(map(lambda x: ' '.join(shuffle(x[1:])), product['categories'])))
+            catenames = ' '.join(list(map(lambda x: ' '.join(x[-1:]), product['categories'])))
 
             raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
 
