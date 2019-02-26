@@ -41,7 +41,7 @@ class TACGAN():
         self.nf_d = args.nf_d
         self.bce_loss = nn.BCELoss()
         self.nll_loss = nn.NLLLoss()
-        self.mse_loss = nn.MSELoss
+        self.mse_loss = nn.MSELoss()
         self.class_filename = args.class_filename
         class_path = os.path.join(self.data_root, self.dataset, self.class_filename)
         with open(class_path) as f:
