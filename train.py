@@ -138,20 +138,20 @@ class TACGAN():
             # train with wrong image, wrong label, real caption
             outD_wrong, outC_wrong = self.netD(images[rnd_perm1], captions[rnd_perm2])
             # lossD_wrong = self.bce_loss(outD_wrong, lbl_fake)
-            lossD_wrong = self.mse_loss(outD_wrong, lbl_fake)
+            lossD_wrong = self.bce_loss(outD_wrong, lbl_fake) + self.mse_loss(outD_wrong, lbl_fake)
             lossC_wrong = self.bce_loss(outC_wrong, labels[rnd_perm1])
 
             # train with real image, real label, real caption
             outD_real, outC_real = self.netD(images, captions)
             #lossD_real = self.bce_loss(outD_real, lbl_real)
-            lossD_real = self.mse_loss(outD_real, lbl_real)
+            lossD_real = self.bce_loss(outD_real, lbl_real) + self.mse_loss(outD_real, lbl_real)
             lossC_real = self.bce_loss(outC_real, labels)
 
             # train with fake image, real label, real caption
             fake = self.netG(noise, captions)
             outD_fake, outC_fake = self.netD(fake.detach(), captions[rnd_perm3])
             #lossD_fake = self.bce_loss(outD_fake, lbl_fake)
-            lossD_fake = self.mse_loss(outD_fake, lbl_fake)
+            lossD_fake = self.bce_loss(outD_fake, lbl_fake) + self.mse_loss(outD_fake, lbl_fake)
             lossC_fake = self.bce_loss(outC_fake, labels[rnd_perm3])
             
             # backward and forwad for NetD
