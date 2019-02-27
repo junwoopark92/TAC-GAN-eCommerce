@@ -1,3 +1,4 @@
+# Just Model It
 # TAC-GAN-eCommerce
 [updated]
 * amazon metadata parser and dataloader
@@ -45,9 +46,10 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 ## Demo
 
 ## Benchmark
-### 1070 vs DGX 
+### 1070 vs DGX(parallel)
 
-### Multi GPU DGX
+<img width="989" alt="2019-02-27 11 48 04" src="https://user-images.githubusercontent.com/26558158/53498713-3526bc00-3aea-11e9-83db-38b5b2595491.png">
+1070에 비해 3배이상의 속도 차이가 나고 gpu수가 늘어날수록 증가하나 벤치 모델 사이즈가 크지않아 작은 배치에서는 dgx를 full-load 시키지 못하였다. 큰 배치에서는 io가 병목으로 보임
 
 ## Reference
 [TAC-GAN PAPER](https://arxiv.org/abs/1703.06412)  
