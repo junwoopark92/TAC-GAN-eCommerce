@@ -118,7 +118,7 @@ class EcommerceDataParser:
             asin = product['asin']
             url = product['imUrl']
             brand = product['brand'] if 'brand' in product.keys() else ''
-            catenames = ''.join(list(map(lambda x: ' '.join(x[-1:]), product['categories'])))
+            catenames = ' '.join(list(map(lambda x: ' '.join(x[-1:]), product['categories'])))
 
             raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
 
@@ -170,7 +170,7 @@ class EcommerceDataParser:
             shuffle_titles = set()
             shuffle_titles.add(title)
             for _ in range(self.n_shuffle):
-                shuffle_titles.add(self.text_cleaning(' '.join(shuffle([catenames, brand, product['title']]))))
+                shuffle_titles.add(self.text_cleaning(' '.join(shuffle([product['title']])))) # add catenames and brand
 
             shuffle_titles = list(shuffle_titles)
             titles += shuffle_titles
