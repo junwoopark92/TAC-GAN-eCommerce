@@ -144,17 +144,17 @@ class EcommerceDataParser:
             #     chose_flag = False
 
             select_cates = [
-                  "Clothing,Shoes&Jewelry>adidas"
+                #  "Clothing,Shoes&Jewelry>adidas"
                 # , "Home&Kitchen>Furniture>LivingRoomFurniture>Tables"
                 # , "Clothing,Shoes&Jewelry>Women>Clothing>Coats&Jackets"
                 # , "Beauty>Makeup>Lips>Lipstick"
-                , "Clothing,Shoes&Jewelry>Women>Shoes>Boots"
+                #, "Clothing,Shoes&Jewelry>Women>Shoes>Boots"
                 # , "Clothing,Shoes&Jewelry>Girls>Clothing>Dresses"
-                # , "Clothing,Shoes&Jewelry>Women>Accessories>Hats&Caps"
+                 "Clothing,Shoes&Jewelry>Women>Accessories>Hats&Caps"
                 # , "Clothing,Shoes&Jewelry>Women>Clothing>Skirts"
                 # , "Clothing,Shoes&Jewelry>Women>Handbags&Wallets>ShoulderBags"
-                # , "Automotive>Motorcycle&Powersports>ProtectiveGear>Helmets"
-                , "Clothing,Shoes&Jewelry>N>Nike"
+                 , "Automotive>Motorcycle&Powersports>ProtectiveGear>Helmets"
+                #, "Clothing,Shoes&Jewelry>N>Nike"
                 #, "Tools&HomeImprovement>Lighting&CeilingFans>Lamps&Shades>TableLamps"
             ]
             if category in select_cates:
