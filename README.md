@@ -4,6 +4,9 @@
 
 ## Text2Image Examples
 ### Guitars
+#### ground truth
+<img width="883" alt="gt_text" src="https://user-images.githubusercontent.com/26558158/53466603-0aab1380-3a96-11e9-88e4-f70d0f2cf30b.png">
+
 #### shape variation
 
 1) guitar + acoustics
