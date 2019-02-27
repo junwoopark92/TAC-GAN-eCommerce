@@ -8,7 +8,7 @@ PARSEMETA:
   DOC2VEC_DIR_PATH: 'data/doc2vec'
   USE_COLS: ['asin', 'imUrl', 'title', 'categories']
   USE_CATE: [] #['Musical Instruments']
-  N_SHUFFLE: 4
+  N_SHUFFLE: 1
   CATE_DEPTH: 4
   VOCAB_SIZE: 5000
   N_SAMPLE: 10000000
