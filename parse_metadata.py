@@ -118,7 +118,7 @@ class EcommerceDataParser:
             asin = product['asin']
             url = product['imUrl']
             brand = product['brand'] if 'brand' in product.keys() else ''
-            catenames = ' '.join(list(map(lambda x: ' '.join(x[-1:]), product['categories'])))
+            catenames = ''.join(list(map(lambda x: ' '.join(x[-1:]), product['categories'])))
 
             raw_categories = product['categories'][0] if len(product['categories']) > 0 else None
 
@@ -135,30 +135,30 @@ class EcommerceDataParser:
             # hardcoding erase cate
             chose_flag = False
 
-            cates = category.split('>')
-            cates = cates[1] if len(cates) > 2 else None
-            if cates is not None and 'Guitars' in cates:
-                chose_flag = True
-
-            if 'BeginnerKits' in category:
-                chose_flag = False
-
-            # select_cates = [
-            #       "Clothing,Shoes&Jewelry>adidas"
-            #     , "Home&Kitchen>Furniture>LivingRoomFurniture>Tables"
-            #     , "Clothing,Shoes&Jewelry>Women>Clothing>Coats&Jackets"
-            #     , "Beauty>Makeup>Lips>Lipstick"
-            #     , "Clothing,Shoes&Jewelry>Women>Shoes>Boots"
-            #     , "Clothing,Shoes&Jewelry>Girls>Clothing>Dresses"
-            #     , "Clothing,Shoes&Jewelry>Women>Accessories>Hats&Caps"
-            #     , "Clothing,Shoes&Jewelry>Women>Clothing>Skirts"
-            #     , "Clothing,Shoes&Jewelry>Women>Handbags&Wallets>ShoulderBags"
-            #     , "Automotive>Motorcycle&Powersports>ProtectiveGear>Helmets"
-            #     , "Clothing,Shoes&Jewelry>N>Nike"
-            #     , "Tools&HomeImprovement>Lighting&CeilingFans>Lamps&Shades>TableLamps"
-            # ]
-            # if category in select_cates:
+            # cates = category.split('>')
+            # cates = cates[1] if len(cates) > 2 else None
+            # if cates is not None and 'Guitars' in cates:
             #     chose_flag = True
+            #
+            # if 'BeginnerKits' in category:
+            #     chose_flag = False
+
+            select_cates = [
+                  "Clothing,Shoes&Jewelry>adidas"
+                # , "Home&Kitchen>Furniture>LivingRoomFurniture>Tables"
+                # , "Clothing,Shoes&Jewelry>Women>Clothing>Coats&Jackets"
+                # , "Beauty>Makeup>Lips>Lipstick"
+                , "Clothing,Shoes&Jewelry>Women>Shoes>Boots"
+                # , "Clothing,Shoes&Jewelry>Girls>Clothing>Dresses"
+                # , "Clothing,Shoes&Jewelry>Women>Accessories>Hats&Caps"
+                # , "Clothing,Shoes&Jewelry>Women>Clothing>Skirts"
+                # , "Clothing,Shoes&Jewelry>Women>Handbags&Wallets>ShoulderBags"
+                # , "Automotive>Motorcycle&Powersports>ProtectiveGear>Helmets"
+                , "Clothing,Shoes&Jewelry>N>Nike"
+                #, "Tools&HomeImprovement>Lighting&CeilingFans>Lamps&Shades>TableLamps"
+            ]
+            if category in select_cates:
+                chose_flag = True
 
             if not chose_flag:
                 continue
