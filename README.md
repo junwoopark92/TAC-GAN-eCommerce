@@ -4,8 +4,8 @@
 
 ## Text2Image Examples
 ### Guitars
-#### ground truth
-<img width="883" alt="gt_text" src="https://user-images.githubusercontent.com/26558158/53466603-0aab1380-3a96-11e9-88e4-f70d0f2cf30b.png">
+#### Generated image examples
+<img width="933" alt="2019-02-27 2 15 59" src="https://user-images.githubusercontent.com/26558158/53467593-40ea9200-3a9a-11e9-9cf6-1f66da138c88.png">
 
 #### shape variation
 
