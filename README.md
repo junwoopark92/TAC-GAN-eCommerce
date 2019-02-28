@@ -45,6 +45,7 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 <img width="456" alt="color text variation" src="https://user-images.githubusercontent.com/26558158/53462759-48a13b00-3a88-11e9-92ad-cd6db7d274fa.png"> 
 
 ## Demo
+<iframe width="1280" height="628" src="https://www.youtube.com/embed/q-HZAPw6G0o" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Benchmark
 ### 1070 vs DGX(parallel)
