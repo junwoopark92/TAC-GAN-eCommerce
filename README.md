@@ -6,6 +6,7 @@
 * bce loss => lsgan loss
 
 ## Text to Image Synthesis
+<img width="981" alt="2019-02-28 9 03 57" src="https://user-images.githubusercontent.com/26558158/53531856-d7b95c00-3b37-11e9-9c21-ccb75300cdf6.png">
 
 ## Amazon eCommerce Dataset
 Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
@@ -48,7 +49,7 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 ## Benchmark
 ### 1070 vs DGX(parallel)
 
-<img width="989" alt="2019-02-27 11 48 04" src="https://user-images.githubusercontent.com/26558158/53498713-3526bc00-3aea-11e9-83db-38b5b2595491.png">
+<img width="990" alt="2019-02-28 8 26 20" src="https://user-images.githubusercontent.com/26558158/53530262-a1c5a900-3b32-11e9-89b2-927501fd418b.png">
 1070에 비해 3배이상의 속도 차이가 나고 gpu수가 늘어날수록 증가하나 벤치 모델 사이즈가 크지않아 작은 배치에서는 dgx를 full-load 시키지 못하였다. 큰 배치에서는 io가 병목으로 보임
 
 ## Reference
