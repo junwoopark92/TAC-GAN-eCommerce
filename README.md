@@ -106,7 +106,7 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 
 2) classify abused product image using discriminator
 
-<img width="1109" alt="2019-02-28 2 59 13" src="https://user-images.githubusercontent.com/26558158/53544541-bf623500-3b69-11e9-9856-d9cef1ce9d29.png">
+<img width="1102" alt="2019-02-28 3 03 30" src="https://user-images.githubusercontent.com/26558158/53544627-11a35600-3b6a-11e9-9fb0-ce58750febd2.png">
 
 ## Benchmark
 ### 1070 vs DGX(parallel)
