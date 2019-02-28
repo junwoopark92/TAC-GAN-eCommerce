@@ -100,9 +100,10 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 <img width="456" alt="color text variation" src="https://user-images.githubusercontent.com/26558158/53462759-48a13b00-3a88-11e9-92ad-cd6db7d274fa.png"> 
 
 ## Demo application
-1) generating product image from product metadata (product name, category, brand, color)
+1) generating product image from product metadata (product name, category, brand, color) 
 
 [![Watch the demo video](https://img.youtube.com/vi/q-HZAPw6G0o/0.jpg)](https://www.youtube.com/watch?v=q-HZAPw6G0o)
+##### ↑ Click this video
 
 2) classify abused product image using discriminator
 
