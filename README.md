@@ -48,7 +48,7 @@ eCommerce에서 상품 메타정보 정제는 중요한 이슈입...
 
 <img width="1000" alt="2019-02-28 1 49 17" src="https://user-images.githubusercontent.com/26558158/53541995-b40a0c00-3b5f-11e9-998d-4198748e9eae.png">
 
-한달이라는 시간동안 처음으로 GAN학습을 하면서 빠르게 결과를 볼수 있었던것은 성능이 우수한 DGX시스템과 Backend AI의 환경덕분이었습니다. 개인이 사용하는 GTX GPU에 비하여 일반적으로 3~4배의 성능을 보이고 CUDA설치등에 시간을 소요하지않았기 때문에 시간을 절약할수 있었습니다. 추가적으로 학습된 Dicrinator를 이용하여 어뷰징이미지여부를 판단하는것과 좋더 많은 카테고리에 대해 통합된 모델을 만들지 못한점이 약간의 아쉬움으로 남습니다. 행사가 끝난이후에도 추가적으로 진행해보고 싶습니다.
+한달이라는 시간동안 처음으로 GAN학습을 하면서 빠르게 결과를 볼수 있었던것은 성능이 우수한 DGX시스템과 Backend AI의 환경덕분이었습니다. 개인이 사용하는 GTX GPU에 비하여 일반적으로 3~4배의 성능을 보이고 CUDA설치등에 시간을 소요하지않았기 때문에 시간을 절약할수 있었습니다. 추가적으로 조금 더 많은 카테고리에 대해 통합된 모델을 만들지 못한점이 약간의 아쉬움으로 남습니다. 행사가 끝난이후에도 추가적으로 진행해보고 싶습니다.
 Backend AI의 내장된 Jupyter notebook과 개발환경이 데이터 디렉토리와 분리된점이 개인적으로 편하였습니다. 행사이름 처럼 Just model it한 좋은 경험이었습니다. 대회를 기획 및 주관해주신 lablup과 늦은시간까지도 QnA를 해주신 담당자분들께 감사를 표합니다.
 
 </p>
@@ -99,9 +99,14 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 1) guitar + color
 <img width="456" alt="color text variation" src="https://user-images.githubusercontent.com/26558158/53462759-48a13b00-3a88-11e9-92ad-cd6db7d274fa.png"> 
 
-## Demo Video
+## Demo application
+1) generating product image from product metadata (product name, category, brand, color)
+
 [![Watch the demo video](https://img.youtube.com/vi/q-HZAPw6G0o/0.jpg)](https://www.youtube.com/watch?v=q-HZAPw6G0o)
 
+2) classify abused product image using discriminator
+
+<img width="1109" alt="2019-02-28 2 59 13" src="https://user-images.githubusercontent.com/26558158/53544541-bf623500-3b69-11e9-9856-d9cef1ce9d29.png">
 
 ## Benchmark
 ### 1070 vs DGX(parallel)
