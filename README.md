@@ -1,5 +1,7 @@
 # Just Model It
 
+![2019-02-28 1 42 47](https://user-images.githubusercontent.com/26558158/53541834-fe3ebd80-3b5e-11e9-851a-5fa6792df04a.png)
+
 Just Model It 행사는 one day one model을 꿈꾸는 머신러닝 엔지니어에게 혹은 컴퓨터의 하드웨어 성능때문에 그동안 생각으로만 모델링하고 있던 사람에게 좋은기회입니다. 저 또한 회사에 다니면서 회사 사정상 개인적인 모델을 학습할수 없기 때문에 이번 대회는 평소에 풀고 싶던 문제에 대해 모델링을 할수 있는 기회였습니다.
  
 eCommerce에서 상품 메타정보 정제는 중요한 이슈입... 
@@ -38,10 +40,15 @@ eCommerce에서 상품 메타정보 정제는 중요한 이슈입...
 ![good_loss_graph](https://user-images.githubusercontent.com/26558158/53537035-ec075400-3b4b-11e9-8c0d-7b1030b2037d.png)
 ![bad_loss_graph](https://user-images.githubusercontent.com/26558158/53537244-a72fed00-3b4c-11e9-8c02-94421012d1bf.png)
 
-경험적으로 학습을 진행하면서 두번째 loss 그래프처럼 G의 loss와 D의 loss가 처음에는 함께 감소하다가 후에는 G loss는 발산하고 D로스는 수렴하는 경향을 보이면 더이상 이미지의 퀄리티가 좋아지지 않았습니다. 학습이 잘되는 경우에는 첫번째 G loss와 D loss가 서로 흔들리면서 감소하는 할때 학습이 잘되는 경향을 보입니다.
+경험적으로 학습을 진행하면서 두번째 loss 그래프처럼 G의 loss와 D의 loss가 처음에는 함께 감소하다가 후에는 G loss는 발산하고 D로스는 수렴하는 경향을 보이면 더이상 이미지의 퀄리티가 좋아지지 않았습니다. 학습이 잘되는 경우에는 첫번째 G loss와 D loss가 증감하면서 감소하는 할때 학습이 잘되는 경향을 보입니다.
 
 여러 카테고리의 결과중에서 guitar 카테고리가 문장에 따라 형태와 색생을 가장 잘 반영하여 자세한 실험결과를 추가했습니다. 이는 다른 카테고리에 비해 상품명이 상품이미지의 특성을 잘반영하고 있고 전체적으로 큰 형태변환이 덜한 카테고리이기 때문에 그렇습니다. 반대로 예를 들어 adidas 카테고리의 경우 신발, 티셔츠, 그리고 사람의 착용모습등 바꿔야할 서로간의 차이가 너무 크기때문에 학습이 잘안되는 경향을 보였습니다.
 
+<img width="1000" alt="2019-02-28 1 46 44" src="https://user-images.githubusercontent.com/26558158/53541948-7c02c900-3b5f-11e9-8e93-5fd13648d739.png">
+
+<img width="1000" alt="2019-02-28 1 49 17" src="https://user-images.githubusercontent.com/26558158/53541995-b40a0c00-3b5f-11e9-998d-4198748e9eae.png">
+
+한달이라는 시간동안 처음으로 GAN학습을 하면서 빠르게 결과를 볼수 있었던것은 성능이 우수한 DGX시스템과 Backend AI의 환경덕분이었습니다. 개인이 사용하는 GTX GPU에 비하여 일반적으로 3~4배의 성능을 보이고 CUDA설치등에 시간을 소요하지않았기 때문에 시간을 절약할수 있었습니다. Backend AI의 내장된 Jupyter notebook과 개발환경이 데이터 디렉토리와 분리된점이 개인적으로 편하였습니다. 행사이름 처럼 Just model it한 좋은 경험이었습니다. 대회를 기획 및 주관해주신 lablup과 늦은시간까지도 QnA를 해주신 담당자분들께 감사를 표합니다.
 
 </p>
 </details>
@@ -105,3 +112,4 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 [TAC-GAN PAPER](https://arxiv.org/abs/1703.06412)  
 [TAC-GAN tensorflow code](https://github.com/dashayushman/TAC-GAN)  
 [TAC-GAN pytorch code](https://github.com/neuperc/TAC-GAN_JeHaYaFa)  
+[BACKEND AI repo](https://github.com/lablup/backend.ai)
