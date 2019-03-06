@@ -2,18 +2,18 @@
 
 ![2019-02-28 1 42 47](https://user-images.githubusercontent.com/26558158/53541834-fe3ebd80-3b5e-11e9-851a-5fa6792df04a.png)
 
-Just Model It 행사는 one day one model을 꿈꾸는 머신러닝 엔지니어에게 혹은 컴퓨터의 하드웨어 성능때문에 그동안 생각으로만 모델링하고 있던 사람에게 좋은기회입니다. 저 또한 회사에 다니면서 회사 사정상 개인적인 모델을 학습할수 없기 때문에 이번 대회는 평소에 풀고 싶던 문제에 대해 모델링을 할수 있는 기회였습니다.
+Just Model It 행사는 one day one model을 꿈꾸는 머신러닝 엔지니어에게 혹은 컴퓨터의 하드웨어 성능때문에 그동안 생각으로만 모델링하고 있던 사람에게 좋은기회입니다. 저 또한 회사에서 개인적인 모델을 학습할 수 없었기 때문에 이번 대회는 평소에 풀고 싶던 문제에 대해 모델링을 할수 있는 기회였습니다.
  
 eCommerce에서 상품 메타정보 정제는 중요한 이슈입... 
 
 <details><summary> 내용 더보기 ...</summary>
 <p>
   
-니다. 판매자와 소비자를 연결하는 쇼핑몰에서 많고 좋은 상품들은 소비자들에게 선택의 폭을 넓여주기 때문에 매력적인 요소 중 하나입니다. 하지만 하루에 수십개의 상품을 올리는 판매자에게 정제된 메타정보를 제공하는 상품등록을 기대하기는 힘들고 또한 판매자가 자신의 상품을 돋보이게 하기위해 상품 이미지에 홍보문구를 추가하는 경우가 많은점은 상품본연의 정보와 일치하지 않는 상품 메타 데이터를 만들어냅니다. eCommerce에서는 판매자 또한 고객이기 때문에 판매자에게 위와같은 어뷰징을 제제하기 쉽지않고 실제로 하루에 등록되는 수천개의 상품에 대해 수작업으로는 정제할 수가 없습니다. 
+니다. 판매자와 소비자를 연결하는 쇼핑몰에서 많고 좋은 상품들은 소비자들에게 선택의 폭을 넓여주기 때문에 매력적인 요소 중 하나입니다. 하지만 하루에 수십개의 상품을 올리는 판매자에게 (1)**이미지 누락**이나 브랜드정보 누락 등 정제된 메타정보를 제공하는 상품등록을 기대하기는 힘들고 또한 판매자가 자신의 상품을 돋보이게 하기위해 (2)**상품 이미지에 홍보문구를 추가**하는 경우가 많은점은 상품본연의 정보와 일치하지 않는 상품 메타 데이터를 만들어냅니다. eCommerce에서는 판매자 또한 고객이기 때문에 판매자에게 위와같은 어뷰징을 제제하기 쉽지않고 실제로 하루에 등록되는 수천개의 상품에 대해 수작업으로는 정제할 수가 없습니다. 
 
-그래서 딥러닝 모델을 통하여 상품의 메타 정보를 바탕으로 이미지를 생성하는 GAN 모델을 만들었습니다. Generator를 통해 상품명, 카테고리명, 브랜드, 그리고 속성등을 이용하여 상품이미지를 생성하고 이미지에 대해 real/fake를 구분하도록 학습된 Discriminator를 이용하여 상품과 관계 없는 어뷰징 이미지를 판별하도록 하였습니다.
+(1),(2)의 문제를 해결하고 싶었고 상품의 메타 정보를 바탕으로 이미지를 생성하는 GAN 모델을 만들었습니다. (1)에 대해 Generator를 통해 상품명, 카테고리명, 브랜드, 그리고 속성등을 이용하여 상품이미지를 생성하고 이미지에 대해 real/fake를 구분하도록 학습된 Discriminator를 이용하여 (2)에 대해 상품과 관계 없는 어뷰징 이미지로 판별하도록 하였습니다.
 
-관련하여 Text to Image synthesis대해 생성모델로 stackgan, stackgan++, tac-gan 논문을 찾았습니다. eCommerce 데이터를 이용한것은 없었기에 amazon product metadata를 학습시키기로 하였고 backend ai에 업로드하여 시간적으로 제일 최신인 tac-gan을 프로토타입하였습니다. dataset에 존재하는 상품의수는 약 900만개이고 관련 리프 카테고리는 16000개 입니다. 이미지를 모두 다운받기위해 걸린시간은 약 200개의 쓰레드를 이용하여 1일이 걸렸고 이미지의 전체 용량은 260gb를 차지하였습니다. 개인컴퓨터로는 처리할수 없는 크기이기에 이번 대회에서 제공해주는 DGX를 충분히 이용하기 위해 전체적으로 큰 데이터셋을 선택하였습니다.
+관련하여 Text to Image synthesis대해 생성모델로 stackgan, stackgan++, tac-gan 논문을 찾았습니다. eCommerce 데이터를 이용한것은 없었기에 amazon product metadata를 학습시키기로 하였고 backend ai에 업로드하여 tac-gan을 프로토타입하였습니다. dataset에 존재하는 상품의수는 약 900만개이고 관련 리프 카테고리는 16000개 입니다. 이미지를 모두 다운받기위해 걸린시간은 약 200개의 쓰레드를 이용하여 1일이 걸렸고 이미지의 전체 용량은 260gb를 차지하였습니다. 개인컴퓨터로는 처리할수 없는 크기이기에 이번 대회에서 제공해주는 DGX를 충분히 이용하기 위해 전체적으로 큰 데이터셋을 선택하였습니다.
 
 상품명을 이용하여 상품이미지를 생성하기 위해선 우선 상품명을 임베딩하여야 합니다. 위의 소개한 논문들은 skipthoughts라는 pretrained model을 사용하여 문장을 임베딩합니다. 하지만 eCommerce에서의 단어나 문장의 의미가 일반적인 의미와 다를수 있기 (예를들어 삼성 모니터 S23C550H 경우 모델명은 회화에선 의미없는 단어로 판단되지만 eCommerce에선 상품의 특징을 나타내는 단어로 작용) 때문에 임베딩모델을 직접 학습하였습니다. 먼저 out of vocabulary (OOV) 문제에 영향을 덜받는 Sentencepiece를 이용하여 문장의 각단어와 문자들을 인덱싱하였고 인덱싱된 문자들을 gensim의 doc2vec구현을 이용하여 문장 임베딩 모델을 학습하였습니다.
 
@@ -48,7 +48,7 @@ eCommerce에서 상품 메타정보 정제는 중요한 이슈입...
 
 <img width="1000" alt="2019-02-28 1 49 17" src="https://user-images.githubusercontent.com/26558158/53541995-b40a0c00-3b5f-11e9-998d-4198748e9eae.png">
 
-한달이라는 시간동안 처음으로 GAN학습을 하면서 빠르게 결과를 볼수 있었던것은 성능이 우수한 DGX시스템과 Backend AI의 환경덕분이었습니다. 개인이 사용하는 GTX GPU에 비하여 일반적으로 3~4배의 성능을 보이고 CUDA설치등에 시간을 소요하지않았기 때문에 시간을 절약할수 있었습니다. 추가적으로 학습된 Dicrinator를 이용하여 어뷰징이미지여부를 판단하는것과 좋더 많은 카테고리에 대해 통합된 모델을 만들지 못한점이 약간의 아쉬움으로 남습니다. 행사가 끝난이후에도 추가적으로 진행해보고 싶습니다.
+한달이라는 시간동안 처음으로 GAN학습을 하면서 빠르게 결과를 볼수 있었던것은 성능이 우수한 DGX시스템과 Backend AI의 환경덕분이었습니다. 개인이 사용하는 GTX GPU에 비하여 일반적으로 3~4배의 성능을 보이고 CUDA설치등에 시간을 소요하지않았기 때문에 시간을 절약할수 있었습니다. 추가적으로 조금 더 많은 카테고리에 대해 통합된 모델을 만들지 못한점이 약간의 아쉬움으로 남습니다. 행사가 끝난이후에도 추가적으로 진행해보고 싶습니다.
 Backend AI의 내장된 Jupyter notebook과 개발환경이 데이터 디렉토리와 분리된점이 개인적으로 편하였습니다. 행사이름 처럼 Just model it한 좋은 경험이었습니다. 대회를 기획 및 주관해주신 lablup과 늦은시간까지도 QnA를 해주신 담당자분들께 감사를 표합니다.
 
 </p>
@@ -58,6 +58,7 @@ Backend AI의 내장된 Jupyter notebook과 개발환경이 데이터 디렉토�
 [updated]
 * amazon metadata parser and dataloader
 * sentencepiece indexer and doc2vec
+* text shuffling for data augmentation
 * bce loss => lsgan loss
 
 ## Text to Image Synthesis
@@ -99,15 +100,28 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 1) guitar + color
 <img width="456" alt="color text variation" src="https://user-images.githubusercontent.com/26558158/53462759-48a13b00-3a88-11e9-92ad-cd6db7d274fa.png"> 
 
-## Demo Video
+## Demo application
+1) generating product image from product metadata (product name, category, brand, color) 
+
 [![Watch the demo video](https://img.youtube.com/vi/q-HZAPw6G0o/0.jpg)](https://www.youtube.com/watch?v=q-HZAPw6G0o)
+##### ↑ Click this video
+
+2) classify abused product image using discriminator
+
+<img width="1022" alt="2019-03-06 10 02 54" src="https://user-images.githubusercontent.com/26558158/53848326-3464bd00-3ff7-11e9-9c70-e5bc1fc13e7e.png">
 
 
 ## Benchmark
 ### 1070 vs DGX(parallel)
 
 <img width="990" alt="2019-02-28 8 26 20" src="https://user-images.githubusercontent.com/26558158/53530262-a1c5a900-3b32-11e9-89b2-927501fd418b.png">
-1070에 비해 3배이상의 속도 차이가 나고 gpu수가 늘어날수록 증가하나 벤치 모델 사이즈가 크지않아 작은 배치에서는 dgx를 full-load 시키지 못하였다. 큰 배치에서는 io가 병목으로 보임
+벤치마크는 TAC-GAN 모델을 대상으로 진행하였으며 CPU와 기타IO 성능의 차이가 있습니다.
+
+- 1070 vs Tesla V100 16GB single (batch size=128)
+약 3배 정도의 성능차이를 보이며 IO로 인한 성능저하가 없을때까지 Batch size를 조절했습니다. 1070은 평균 로드율 90 ~ 100였으며 V100의 경우 80 ~ 90였습니다.
+
+- Tesla V100 16GB (single ~ 4, batch size=32 ~ 128)
+GPU의 수가 증가함에 따라 성능증가를 보이지만 선형적으로 증가하지 않습니다. 그 이유로 우선 TAC-GAN 모델크기가 작아 연산시 데이터 피딩하는 IO가 바틀넥이 되는것으로 보이며 배치크기를 일정 크기 이상증가시킬경우 IO의 shared 하는 영역이 초과하는 오류가 발생합니다. Single의 경우 평균적으로 80 ~ 90 이상의 로드율을 보엿으며 4 GPU의 경우 로드율은 40 ~ 50 까지 밖에 되지 않아 모델크기가 커질경우 추가적인 성능을 얻을수 있을것으로 판단됩니다.
 
 ## Reference
 [TAC-GAN PAPER](https://arxiv.org/abs/1703.06412)  
