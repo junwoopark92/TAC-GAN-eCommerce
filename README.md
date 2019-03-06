@@ -108,13 +108,20 @@ Amazon Product Metadata: http://snap.stanford.edu/data/amazon/productGraph/
 
 2) classify abused product image using discriminator
 
-<img width="1102" alt="2019-02-28 3 03 30" src="https://user-images.githubusercontent.com/26558158/53544627-11a35600-3b6a-11e9-9fb0-ce58750febd2.png">
+<img width="1022" alt="2019-03-06 10 02 54" src="https://user-images.githubusercontent.com/26558158/53848326-3464bd00-3ff7-11e9-9c70-e5bc1fc13e7e.png">
+
 
 ## Benchmark
 ### 1070 vs DGX(parallel)
 
 <img width="990" alt="2019-02-28 8 26 20" src="https://user-images.githubusercontent.com/26558158/53530262-a1c5a900-3b32-11e9-89b2-927501fd418b.png">
-1070에 비해 3배이상의 속도 차이가 나고 gpu수가 늘어날수록 증가하나 벤치 모델 사이즈가 크지않아 작은 배치에서는 dgx를 full-load 시키지 못하였다. 큰 배치에서는 io가 병목으로 보임
+벤치마크는 TAC-GAN 모델을 대상으로 진행하였으며 CPU와 기타IO 성능의 차이가 있습니다.
+
+- 1070 vs Tesla V100 16GB single (batch size=128)
+약 3배 정도의 성능차이를 보이며 IO로 인한 성능저하가 없을때까지 Batch size를 조절했습니다. 1070은 평균 로드율 90 ~ 100였으며 V100의 경우 80 ~ 90였습니다.
+
+- Tesla V100 16GB (single ~ 4, batch size=32 ~ 128)
+GPU의 수가 증가함에 따라 성능증가를 보이지만 선형적으로 증가하지 않습니다. 그 이유로 우선 TAC-GAN 모델크기가 작아 연산시 데이터 피딩하는 IO가 바틀넥이 되는것으로 보이며 배치크기를 일정 크기 이상증가시킬경우 IO의 shared 하는 영역이 초과하는 오류가 발생합니다. Single의 경우 평균적으로 80 ~ 90 이상의 로드율을 보엿으며 4 GPU의 경우 로드율은 40 ~ 50 까지 밖에 되지 않아 모델크기가 커질경우 추가적인 성능을 얻을수 있을것으로 판단됩니다.
 
 ## Reference
 [TAC-GAN PAPER](https://arxiv.org/abs/1703.06412)  
