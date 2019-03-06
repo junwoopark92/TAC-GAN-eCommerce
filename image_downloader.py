@@ -8,9 +8,9 @@ from multiprocessing.pool import ThreadPool
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def parse_data(path):
+def parse_data(path='data/datasets/products/products.tsv'):
     key_url_list = []
-    with open('data/datasets/products/products.tsv') as f:
+    with open(path) as f:
         for i, l in enumerate(f):
             row = l.split('\t')
             asin = row[0]
@@ -72,7 +72,7 @@ def run():
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
-    key_url_list = parse_data(data_file)[-130000:]
+    key_url_list = parse_data(data_file)
 
     pool = ThreadPool(processes=20)
 
