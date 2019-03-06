@@ -61,6 +61,25 @@ Backend AI의 내장된 Jupyter notebook과 개발환경이 데이터 디렉토�
 * text shuffling for data augmentation
 * bce loss => lsgan loss
 
+## 실행방법
+
+0. 데이터 준비
+   - 먼저 amazon product metadata를 아래 Dataset항목의 링크의 안내에 따라 이메일로 요청하여 유효한 다운로드링크를 얻고 다운로드하여 아래 경로에 위치시킵니다. `data/datasets/products/metadata.json.gz`
+   
+1. `python parse_metadata.py parse configs/config-real.yaml`
+   - 전체 900만 중에서 parse_metadata.py에서 특정 카테고리를 가지는 데이터를 추출하고 정제합니다. (default: guitars category)
+
+2. `python image_downloader.py ./data/datasets/products/products.tsv ./data/datasets/products/images`
+   - 1에서 얻은 상품데이터들에 대해서 이미지를 다운받습니다. 데이터가 많을 경우 index 를 조정하여 동시에 여러 프로세스로 실행시키는것을 권유드립니다.
+
+3. `python make_db.py make_db real --dataset=products`
+   - 하나의 h5파일로 db를 생성합니다.
+
+4. `python train.py --docvec-size 300 -num-workers 4`
+   - 학습을 합니다.
+
+5.  jupyter notebook에서 `demo_code.ipynb`를 실행시켜 테스트합니다.
+   
 ## Text to Image Synthesis
 <img width="981" alt="2019-02-28 9 03 57" src="https://user-images.githubusercontent.com/26558158/53531856-d7b95c00-3b37-11e9-9c21-ccb75300cdf6.png">
 
